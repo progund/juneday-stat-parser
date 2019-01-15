@@ -71,14 +71,6 @@ public class Chapter {
     return pages;
   }
 
-  public int presentationPages() {
-    int sum = 0;
-    for (Presentation p : presentations) {
-      sum += p.pages();
-    }
-    return sum;
-  }
-
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();

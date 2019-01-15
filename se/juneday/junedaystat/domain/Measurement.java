@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 import se.juneday.junedaystat.domain.Book;
 import se.juneday.junedaystat.domain.BooksSummary;
@@ -17,6 +18,7 @@ import se.juneday.junedaystat.domain.JunedayStat;
 import se.juneday.junedaystat.domain.PodStat;
 import se.juneday.junedaystat.domain.Presentation;
 import se.juneday.junedaystat.domain.VideoStat;
+import se.juneday.junedaystat.utils.Utils;
 
 public class Measurement {
 
@@ -30,6 +32,43 @@ public class Measurement {
      diffBooks(start.books(), stop.books());
   }
 
+  public Measurement() {
+  }
+
+  /*  public Measurement(LocalDate startDate, LocalDate stopDate) {
+    Measurement measurement = new Measurement();
+    measurement.startJunedayStat().date(startDate);
+    measurement.stopJunedayStat().date(stopDate);
+  }
+
+  public Measurement createFromDate(String startDate, String stopDate) {
+    Measurement measurement =
+      new Measurement(Utils.stringToLocalDate(startDate),
+                      Utils.stringToLocalDate(stopDate));
+  }
+  */
+  
+  private LocalDate now() {
+    return LocalDate.now();
+  }
+  /*
+  public Measurement(LocalDate startDate) {
+    Measurement measurement = new Measurement(startDate, now());
+    return measurement;
+  }
+
+
+  public Measurement(int amount, ChronoUnit unit) {
+    String startDate;
+    String stopDate;
+    LocalDate now = now();
+    LocalDate then = now.minus(amount, unit);
+    Measurement measurement = new Measurement(then, now);
+
+    return measurement;
+  }
+  */
+  
   public static Set<String>  bookTitlesUnion(List<Book> b1, List<Book> b2) {
     Set<String> bookSet = new HashSet<>();
 
@@ -42,7 +81,7 @@ public class Measurement {
     return bookSet;
   }
 
-  public Set<String> chapterTitlesUnion(List<Chapter> c1, List<Chapter> c2) {
+  public static Set<String> chapterTitlesUnion(List<Chapter> c1, List<Chapter> c2) {
     Set<String> chapterSet = new HashSet<>();
 
     for (Chapter c : c1) {
@@ -122,6 +161,22 @@ public class Measurement {
      }
   }
 
+  public JunedayStat startJunedayStat() {
+    return start;
+  }
+  
+  public JunedayStat stopJunedayStat() {
+    return stop;
+  }
+  
+  public void startJunedayStat(JunedayStat start) {
+    this.start = start;
+  }
+  
+  public void stopJunedayStat(JunedayStat stop) {
+    this.stop = stop;
+  }
+  
   public static int bookPages(Book b) {
     if (b!=null) {
       return b.pages();

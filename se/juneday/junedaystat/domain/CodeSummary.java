@@ -10,6 +10,7 @@ public class CodeSummary {
     Java,
     Bash,
     C,
+    Doc,
     Build
   };
 

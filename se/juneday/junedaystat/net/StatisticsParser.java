@@ -177,7 +177,7 @@ public class StatisticsParser {
         String type = getStringValue(lang, JunedayStat.JDSTAT_SOURCE_CODE_TYPE, "unknown");
         int loc = getIntValue(lang, JunedayStat.JDSTAT_SOURCE_CODE_LOC, 0);
         int files = getIntValue(lang, JunedayStat.JDSTAT_SOURCE_CODE_FILES, 0);
-        codeSummary.addLanguage(type, new CodeSummary.Stat(type, loc, files));
+        codeSummary.addLanguage(CodeSummary.ProgLang.valueOf(type), new CodeSummary.Stat(CodeSummary.ProgLang.valueOf(type), loc, files));
       } catch (JSONException e) {
         e.printStackTrace();
       }

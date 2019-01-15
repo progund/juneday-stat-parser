@@ -35,6 +35,7 @@ public class JDCli {
                                new String(Files.readAllBytes(Paths.get(fileName))));
     } catch (Exception e) {
       System.err.println("Failed, parsing: " + fileName);
+      e.printStackTrace();
     }
     return null;
   }
@@ -42,6 +43,9 @@ public class JDCli {
   public static void main(String[] args) {
     JunedayStat startStats = readFile("20181213");
     JunedayStat stopStats = readFile("20190112");
+
+      System.out.print(" * " + startStats);
+      System.out.print(" * " + stopStats);
     Measurement measurement = new Measurement(startStats, stopStats);
 
     int diffSum=0;

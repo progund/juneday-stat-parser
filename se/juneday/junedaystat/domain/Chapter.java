@@ -32,6 +32,29 @@ public class Chapter {
     presentations = new ArrayList<>();
   }
 
+  public List<String> channelUrls() {
+    return channelUrls;
+  }
+
+  public List<String> videoUrls() {
+    return videoUrls;
+  }
+
+  public List<Presentation> presentations() {
+    if (presentations!=null) {
+      return presentations;
+    }
+    return new ArrayList<Presentation>();
+  }
+
+  public int presentationsPages() {
+    int sum=0;
+    for (Presentation p : presentations) {
+      sum += p.pages();
+    }
+    return sum;
+  }
+
   public void addChannelUrl(String channel) {
     channelUrls.add(channel);
   }

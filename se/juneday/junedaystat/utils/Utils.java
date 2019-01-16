@@ -37,6 +37,5 @@ public class Utils {
     return decimalFormat.format(d);
   }
 
-  
 
 }

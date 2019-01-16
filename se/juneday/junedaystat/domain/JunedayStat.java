@@ -60,7 +60,7 @@ public class JunedayStat {
       "\n" + books ;
   }
 
-  public VideoStat getVideoSummary() {
+  public VideoStat videoSummary() {
     return videoSummary;
   }
 
@@ -77,11 +77,15 @@ public class JunedayStat {
     return date;
   }
   
-  public BooksSummary getBooksSummary() {
+  public void date(LocalDate date) {
+    this.date = date ;
+  }
+  
+  public BooksSummary booksSummary() {
     return booksSummary;
   }
 
-  public CodeSummary getCodeSummary() {
+  public CodeSummary codeSummary() {
     return codeSummary;
   }
 
@@ -89,5 +93,45 @@ public class JunedayStat {
     return books;
   }
 
+  public int pages() {
+    int sum=0;
+    for (Book b : books) {
+      sum += b.pages();
+    }
+    return sum;
+  }
+  
+  public int presentations() {
+    int sum=0;
+    for (Book b : books) {
+      sum += b.presentations();
+    }
+    return sum;
+  }
+  
+  public int presentationsPages() {
+    int sum=0;
+    for (Book b : books) {
+      sum += b.presentationsPages();
+    }
+    return sum;
+  }
+  
+  public int channels() {
+    int sum=0;
+    for (Book b : books) {
+      sum += b.channels();
+    }
+    return sum;
+  }
+  
+  public int videos() {
+    int sum=0;
+    for (Book b : books) {
+      sum += b.videos();
+    }
+    return sum;
+  }
+  
 
 }

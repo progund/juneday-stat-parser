@@ -33,6 +33,38 @@ public class Book {
     return sum;
   }
 
+  public int videos() {
+    int sum=0;
+    for (Chapter c : chapters) {
+      sum += c.videoUrls().size();
+    }
+    return sum;
+  }
+
+  public int channels() {
+    int sum=0;
+    for (Chapter c : chapters) {
+      sum += c.channelUrls().size();
+    }
+    return sum;
+  }
+
+  public int presentations() {
+    int sum=0;
+    for (Chapter c : chapters) {
+      sum += c.presentations().size();
+    }
+    return sum;
+  }
+
+  public int presentationsPages() {
+    int sum=0;
+    for (Chapter c : chapters) {
+      sum += c.presentationsPages();
+    }
+    return sum;
+  }
+
   public String toString() {
     StringBuilder builder = new StringBuilder();
     builder

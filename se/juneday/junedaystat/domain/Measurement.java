@@ -22,19 +22,10 @@ import se.juneday.junedaystat.utils.Utils;
 
 public class Measurement {
 
-  private JunedayStat startStat;
-  private JunedayStat stopStat;
-
-  public Measurement(JunedayStat startStat, 
-                     JunedayStat stopStat) {
-    this.startStat = startStat;
-    this.stopStat = stopStat;
-  }
 
   private JunedayStat start;
   private JunedayStat stop;
-  public List<MBook> mbooks;
-
+  List<MBook> mbooks;
   public Measurement(JunedayStat start, JunedayStat stop) {
      this.start = start;
      this.stop = stop;
@@ -221,5 +212,4 @@ public class Measurement {
   }
 
     
->>>>>>> d2111b56b9f203f7e4b5a59429dff75ad3652bfa
 }

@@ -51,7 +51,6 @@ public class JunedayStat {
     return podStat;
   }
 
-
   @Override
   public String toString() {
     return "JunedayStat{" +

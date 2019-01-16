@@ -34,8 +34,15 @@ public class JDCli {
   }
   
   public static void main(String[] args) {
-    JunedayStat startStats = readFile("20181231");
+    JunedayStat startStats = readFile("20181107");
     JunedayStat stopStats = readFile("20190114");
+
+    //System.out.println(startStats.books().get(0));
+    for (Book b : stopStats.books()) {
+      System.out.println(b.name() + " " + b.pages());
+    }
+           //    System.out.println(stopStats.books().get(0));
+    
   }
   
 }

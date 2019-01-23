@@ -46,8 +46,10 @@ clean:
 
 %.json:
 	mkdir -p $(DATA_DIR)
-	curl http://rameau.sandklef.com/junedaywiki-stats/`echo $@ | sed 's,data/jd-stats-\([0-9]*\)\.json,\1/jd-stats.json, g'` -o $@
+	echo "Download $@"
+	curl -s http://rameau.sandklef.com/junedaywiki-stats/$(shell echo $@ | sed 's,data/jd-stats-\([0-9]*\)\.json,\1/jd-stats.json, g') -o $@
 
-run: data/jd-stats-20181107.json data/jd-stats-20181231.json data/jd-stats-20190114.json $(JAVA_CLASSES)
+
+run: data/jd-stats-20181107.json data/jd-stats-20181231.json data/jd-stats-20190114.json data/jd-stats-$(shell date +%Y%m%d).json data/jd-stats-$(shell date --date="7 day ago" +%Y%m%d).json $(JAVA_CLASSES)
 	java -cp $(CLASSPATH) $(CLI)
 

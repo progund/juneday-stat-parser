@@ -36,6 +36,7 @@ public class JDCli {
 
   private enum JDSMode {
     PRINT,
+    SUM,
     BOOK
   };
 
@@ -91,11 +92,11 @@ public class JDCli {
       startString = Utils.dateToString(LocalDate.now().minus(1, WEEKS));
     }
 
-    System.out.println(" start: " + startString);
-    System.out.println(" stop:  " + stopString);
+    // System.out.println(" start: " + startString);
+    // System.out.println(" stop:  " + stopString);
     
     session =
-      new JDSSession(JDSMode.PRINT,
+      new JDSSession(JDSMode.SUM,
                      readFile(startString),
                      readFile(stopString));
     
@@ -127,10 +128,104 @@ public class JDCli {
     */
   }
 
+  private void printSummary() {
+    JunedayStat startStats = session.start;
+    JunedayStat stopStats = session.stop;
+    int diffSum=0;
+    int sumStart=0;
+    int sumStop=0;
+    String formatStr = " %-30s %5s %5s %5s %5s\n";
+    String formatStrNumbers = " %-30s %5d %5d %5d %5.2f\n";
+    long dailyDiff = DAYS.between(session.start.date(), session.stop.date());
+
+    System.out.println(" Date information");
+    System.out.println("===========================================================");
+    System.out.println(" Start: " + startStats.date());
+    System.out.println(" Stop:  " + stopStats.date());
+    System.out.println(" Days:  " + dailyDiff);
+    System.out.println();
+
+    
+    System.out.println(" Books");
+    System.out.println("===========================================================");
+    System.out.format(formatStr, "Title", "Start", "Stop", "Diff", "Daily");
+    System.out.println("-----------------------------------------------------------");
+    for (String title : Measurement.bookTitlesUnion(startStats.books(), stopStats.books())) {
+      if (title.equals("")) { continue; }
+      Book startBook = Measurement.findBook(startStats.books(), title);
+      Book stopBook = Measurement.findBook(stopStats.books(), title);
+      
+      int startPages = Measurement.bookPages(startBook);
+      int stopPages = Measurement.bookPages(stopBook);
+      
+      int diff = stopPages - startPages;
+      sumStart += startPages;
+      sumStop += stopPages;
+      diffSum += diff;
+      System.out.format(formatStrNumbers, title, startPages, stopPages, diff, diff/((float)dailyDiff));
+      // System.out.print(" * " + title);
+      // System.out.println(" " + diff + "   ---> " + diffSum );
+    }
+    System.out.println("-----------------------------------------------------------");
+    System.out.format(formatStrNumbers, "Total", sumStart, sumStop, (sumStop - sumStart), (sumStop - sumStart)/((float)dailyDiff));
+
+    
+    System.out.println();
+    System.out.println(" Misc");
+    System.out.println("===========================================================");
+    System.out.format(formatStr,
+                      "Artefact",
+                      "Start",
+                      "Stop",
+                      "Diff",
+                      "Daily");
+    System.out.println("-----------------------------------------------------------");
+    int diff = session.stop.videos() - session.start.videos() ;
+    float videoDaily  =  diff / ((float)dailyDiff);
+    System.out.format(formatStrNumbers,
+                      "Video",
+                      session.start.videos(),
+                      session.stop.videos(),
+                      diff,
+                      videoDaily);
+    
+    diff = session.stop.presentations() - session.start.presentations() ;
+    float presDaily  =  diff / ((float)dailyDiff);
+    System.out.format(formatStrNumbers,
+                      "Presentations",
+                      session.start.presentations(),
+                      session.stop.presentations(),
+                      diff,
+                      presDaily);
+
+    diff = session.stop.presentationsPages() - session.start.presentationsPages() ;
+    float presPagesDaily  =  diff / ((float)dailyDiff);
+    System.out.format(formatStrNumbers,
+                      "Presentation pages",
+                      session.start.presentationsPages(),
+                      session.stop.presentationsPages(),
+                      diff,
+                      presPagesDaily);
+
+    
+    System.out.println();
+    System.out.println();
+    System.out.println("Daily production over the period:");
+    System.out.format(" * %5.2f pages\n",  (sumStop - sumStart)/((float)dailyDiff) );
+    System.out.format(" * %5.2f videos\n" , videoDaily );
+    System.out.format(" * %5.2f presentations\n", presDaily);
+    System.out.format(" * %5.2f presentation pages\n", presPagesDaily);
+    
+
+  }
+
   private void startSession() {
     switch (session.mode) {
     case PRINT:
       printMeasurement();
+      break;
+    case SUM:
+      printSummary();
       break;
     default:
       System.err.println("No or faulty mode found...");

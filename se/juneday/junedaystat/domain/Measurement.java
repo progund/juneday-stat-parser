@@ -25,14 +25,17 @@ public class Measurement {
 
   private JunedayStat start;
   private JunedayStat stop;
-  List<MBook> mbooks;
-  public Measurement(JunedayStat start, JunedayStat stop) {
-     this.start = start;
-     this.stop = stop;
-     diffBooks(start.books(), stop.books());
-  }
+  public MeasurementObject<String> measuredStringList ;
 
+  //  List<MBook> mbooks;
+  public Measurement(JunedayStat start, JunedayStat stop) {
+    this.start = start;
+    this.stop = stop;
+    measuredStringList = new MeasurementObject<String>();
+  }
+  
   public Measurement() {
+    ;
   }
 
   /*  public Measurement(LocalDate startDate, LocalDate stopDate) {
@@ -81,6 +84,18 @@ public class Measurement {
     return bookSet;
   }
 
+  public static Set<String> chaptersUnion(List<Chapter> c1, List<Chapter> c2) {
+    Set<String> chapterSet = new HashSet<>();
+
+    for (Chapter c : c1) {
+      chapterSet.add(c.name());
+    }
+    for (Chapter c : c2) {
+      chapterSet.add(c.name());
+    }
+    return chapterSet;
+  }
+
   public static Set<String> chapterTitlesUnion(List<Chapter> c1, List<Chapter> c2) {
     Set<String> chapterSet = new HashSet<>();
 
@@ -113,6 +128,7 @@ public class Measurement {
     return c;
   }
 
+  /*
   private void diffBooks(List<Book> startBooks, List<Book> stopBooks) {
      mbooks = new ArrayList<MBook>();
      Set<String> bookTitles = bookTitlesUnion(start.books(), stop.books());
@@ -160,7 +176,7 @@ public class Measurement {
        mbooks.add(mbook);
      }
   }
-
+  */
   public JunedayStat startJunedayStat() {
     return start;
   }
@@ -183,7 +199,7 @@ public class Measurement {
     }
     return 0;
   }
-  
+  /*
   public static class MBook {
     public List<MChapter> chapters;
     public String name;
@@ -211,5 +227,45 @@ public class Measurement {
     return b;
   }
 
-    
+  */
+
+  public static Chapter findChapter(Book b, String chapterTitle) {
+    for (Chapter c : b.chapters()) {
+      if (c.name().equals(chapterTitle)) {
+        return c;
+      }
+    }
+    return null;
+  }
+  
+  public static List<String> videos(Book b, String chapterTitle) {
+    Chapter c = findChapter(b, chapterTitle);
+    if (c==null) {
+      return new ArrayList<>();
+    }
+    return c.videoUrls();
+  }
+  
+  public static List<String> channels(Book b, String chapterTitle) {
+    Chapter c = findChapter(b, chapterTitle);
+    if (c==null) {
+      return new ArrayList<>();
+    }
+    return c.channelUrls();
+  }
+
+  public class MeasurementObject<T> {
+
+    // returns 
+    public List<T> listDiff(List<T> first, List<T> second) {
+      List<T> diffList = new ArrayList<>();
+      for (T o : first) {
+        if ( ! second.contains(o) ) {
+          diffList.add(o);
+        }
+      }
+      return diffList;
+    }
+  }
+  
 }

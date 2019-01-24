@@ -54,3 +54,6 @@ run: data/jd-stats-20181231.json data/jd-stats-20181101.json data/jd-stats-20181
 
 2018: data/jd-stats-20180101.json data/jd-stats-20190101.json
 	java -cp $(CLASSPATH) $(CLI) 20180101 20190101 
+
+book: data/jd-stats-20180101.json data/jd-stats-20190101.json
+	java -cp $(CLASSPATH) $(CLI) 20180101 20190101 --books

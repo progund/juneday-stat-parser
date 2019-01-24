@@ -10,6 +10,7 @@ JAVA_SRC= \
   ./se/juneday/junedaystat/domain/PodStat.java \
   ./se/juneday/junedaystat/domain/BooksSummary.java \
   ./se/juneday/junedaystat/net/StatisticsParser.java \
+  ./se/juneday/junedaystat/domain/Measurement.java \
   ./se/juneday/junedaystat/ui/JDCli.java
 
 JAVA_CLASSES=$(JAVA_SRC:.java=.class)
@@ -53,3 +54,12 @@ clean:
 run: data/jd-stats-20181107.json data/jd-stats-20181231.json data/jd-stats-20190114.json data/jd-stats-$(shell date +%Y%m%d).json data/jd-stats-$(shell date --date="7 day ago" +%Y%m%d).json $(JAVA_CLASSES)
 	java -cp $(CLASSPATH) $(CLI)
 
+run: data/jd-stats-20181231.json data/jd-stats-20181101.json data/jd-stats-20181213.json data/jd-stats-20190114.json  data/jd-stats-20190112.json $(JAVA_CLASSES)
+	java -cp $(CLASSPATH) $(CLI)
+
+2018: data/jd-stats-20180101.json data/jd-stats-20190101.json
+	java -cp $(CLASSPATH) $(CLI) 20180101 20190101 
+
+book: data/jd-stats-20180101.json data/jd-stats-20190101.json
+	java -cp $(CLASSPATH) $(CLI) 20180101 20190101 --books
+>>>>>>> c0d821fb1a697b7eb4a8c7af9daa7f0aa98f6cbc

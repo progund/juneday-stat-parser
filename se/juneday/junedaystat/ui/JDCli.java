@@ -270,7 +270,7 @@ public class JDCli {
         }
         if (videoDiffCount>0) {
           System.out.println("    videos");
-          for (String v : diffVideosStart) {
+          for (String v : diffVideosStop) {
             System.out.println("    + " + v);
           }
           for (String v : diffVideosStart) {

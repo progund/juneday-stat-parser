@@ -58,7 +58,10 @@ public class JDCli {
   }
 
   public static JunedayStat readFile(String dateStr) {
-    String fileName = "data/jd-stats-" + dateStr + ".json";
+    String dataDir = System.getProperty("juneday_data_dir","data");
+    String fileName = dataDir + "/" + dateStr + "/jd-stats.json";
+    // System.out.println(dataDir);
+    // System.out.println(fileName);
     LocalDate date = Utils.stringToLocalDate(dateStr);
     try {
       return jsonToJunedayStat(date,

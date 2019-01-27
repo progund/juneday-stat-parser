@@ -58,6 +58,12 @@ public class HtmlExporter {
     builder
       .append(export(stat.code()));
 
+    builder.append("Books<br>");
+    for (MBook book : stat.books()) {
+      builder.append("Book " + book.name() + "<br>");
+      builder.append(export(book));
+    }
+    
     return builder.toString();
   }
 
@@ -72,8 +78,23 @@ public class HtmlExporter {
   }
 
   public String export(MBook book)  {
-    return "";
+    StringBuilder builder = new StringBuilder();
+    builder
+      .append("  <div class=\"rTable\">\n\n")
+      .append("    <div class=\"rTableRow\">\n")
+      .append("      <div class=\"rTableHead\"><strong>Name</strong></div>\n")
+      .append("      <div class=\"rTableHead\"><strong>Channels</strong></div>\n")
+      .append("      <div class=\"rTableHead\"><strong>Videos</strong></div>\n")
+      .append("      <div class=\"rTableHead\"><strong>Presentation</strong></div>\n")
+      .append("    </div>\n\n");
 
+    for (MChapter mchapter: book.chapters()) {
+      builder.append(export(mchapter));
+    }
+    builder.append("  </div>\n\n");
+    
+    return builder.toString();
+    
   }
 
   private String statPerDay(int value) {
@@ -119,8 +140,23 @@ public class HtmlExporter {
   }
 
   public String export(MChapter chapter)  {
-    return "";
-
+    StringBuilder builder = new StringBuilder();
+    
+    builder
+      .append("    <div class=\"rTableRow\">\n")
+      .append("      <div class=\"rTableHead\">" + chapter.name() + "</div>\n")
+      .append("      <div class=\"rTableHead\">" 
+              + statPerDay(( chapter.diffChannelsStop().size() - chapter.diffChannelsStart().size() ))
+              + "</div>\n")
+      .append("      <div class=\"rTableHead\">" 
+              + statPerDay(( chapter.diffVideosStop().size() - chapter.diffVideosStart().size() ))
+              + "</div>\n")
+      .append("      <div class=\"rTableHead\">" 
+              + statPerDay(( chapter.diffPresentationsStop().size() - chapter.diffPresentationsStart().size() ))
+              + "</div>\n")
+      .append("    </div>\n\n");
+    
+    return builder.toString();
   }
 
 

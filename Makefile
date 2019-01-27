@@ -20,6 +20,7 @@ JAVA_SRC= \
   ./se/juneday/junedaystat/domain/exporter/JsonPresentationExporter.java \
   ./se/juneday/junedaystat/net/StatisticsParser.java \
   ./se/juneday/junedaystat/measurement/Measurement.java \
+  ./se/juneday/junedaystat/measurement/exporter/HtmlExporter.java \
   ./se/juneday/junedaystat/ui/JDCli.java
 #  ./se/juneday/junedaystat/domain/exporter/SQLChapterExporter.java \
 
@@ -85,6 +86,8 @@ JSON_FILES=$(DATA_DIR)/20190127/jd-stats.json $(DATA_DIR)/20181107/jd-stats.json
 
 json: $(JSON_FILES)
 
+html: $(JSON_FILES) $(JAVA_CLASSES)
+	@java $(DATA_DIR_ARG) -cp $(CLASSPATH) $(CLI) 20181107  20181231 --html
 
 run: $(JSON_FILES) $(JAVA_CLASSES)
 	java $(DATA_DIR_ARG) -cp $(CLASSPATH) $(CLI)

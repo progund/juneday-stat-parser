@@ -194,6 +194,16 @@ public class Measurement {
          mchapter.diffChannelsStop =
            measuredStringList.listDiff(channels(stopBook, chapterTitle),
                                        channels(startBook, chapterTitle));
+         
+         mchapter.diffPresentationsStart =
+           measuredPresentationList.listDiff(presentations(startBook, chapterTitle),
+                                             presentations(stopBook, chapterTitle));
+         
+         mchapter.diffPresentationsStop =
+           measuredPresentationList.listDiff(presentations(stopBook, chapterTitle),
+                                             presentations(startBook, chapterTitle));
+         
+         
          mchapter.name = chapterTitle;
          mbook.chapters.add(mchapter);
        }
@@ -283,8 +293,8 @@ public class Measurement {
     private List<String> diffVideosStop ;
     private List<String> diffChannelsStart ;
     private List<String> diffChannelsStop;
-    private List<MPresentation> diffPresentationsStart ;
-    private List<MPresentation> diffPresentationsStop;
+    private List<Presentation> diffPresentationsStart ;
+    private List<Presentation> diffPresentationsStop;
     public String name(){
       return name;
     }
@@ -300,15 +310,16 @@ public class Measurement {
     public List<String> diffChannelsStop() {
       return diffChannelsStop;
     }
-    public List<MPresentation> diffPresentationsStart() {
+    public List<Presentation> diffPresentationsStart() {
       return diffPresentationsStart;
     }
-    public List<MPresentation> diffPresentationsStop() {
+    public List<Presentation> diffPresentationsStop() {
       return diffPresentationsStop;
     }
   }
-  
-  public static class MPresentation {
+
+  /*
+  public static class Presentation {
     private String name;
     private int pages;
     public String name() {
@@ -318,7 +329,7 @@ public class Measurement {
       return pages;
     }
   }
-  
+  */
   public MBook findMBook(String title) {
     for (MBook mb : mstat.books) {
       if (mb.name.equals(title)) {
@@ -354,6 +365,14 @@ public class Measurement {
       return new ArrayList<>();
     }
     return c.channelUrls();
+  }
+
+  public static List<Presentation> presentations(Book b, String chapterTitle) {
+    Chapter c = findChapter(b, chapterTitle);
+    if (c==null) {
+      return new ArrayList<>();
+    }
+    return c.presentations();
   }
 
   public class MeasurementObject<T> {

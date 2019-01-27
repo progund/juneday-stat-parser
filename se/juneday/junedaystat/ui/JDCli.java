@@ -26,6 +26,7 @@ import se.juneday.junedaystat.domain.CodeSummary;
 import se.juneday.junedaystat.domain.JunedayStat;
 import se.juneday.junedaystat.domain.PodStat;
 import se.juneday.junedaystat.measurement.Measurement;
+import se.juneday.junedaystat.measurement.exporter.HtmlExporter;
 import se.juneday.junedaystat.domain.Presentation;
 import se.juneday.junedaystat.domain.VideoStat;
 import se.juneday.junedaystat.domain.exporter.*;
@@ -40,6 +41,7 @@ public class JDCli {
     PRINT,
     SUM,
     BOOK,
+    DIFF_HTML,
     BOOK_VIDEO
   };
 
@@ -79,12 +81,14 @@ public class JDCli {
     String stopString = null;
     JDSMode mode = JDSMode.SUM;
     for (int i=0; i<args.length; i++) {
-      if (startString == null) {
+      if (args[i].equals("--books")) {
+        mode = JDSMode.BOOK;
+      } else if (args[i].equals("--html")) {
+        mode = JDSMode.DIFF_HTML;
+      } else if (startString == null) {
         startString = args[i];
       } else if (stopString == null){
         stopString = args[i];
-      } else if (args[i].equals("--books")) {
-        mode = JDSMode.BOOK;
       } else {
         System.err.println("Too many arguments, bailing out");
         System.exit(1);
@@ -255,11 +259,6 @@ public class JDCli {
   private void printBook() {
     JunedayStat startStats = session.start;
     JunedayStat stopStats = session.stop;
-    System.out.println(" --- " + session);
-    System.out.println(" --- " + session.measurement);
-    System.out.println(" --- " + session.measurement.stat());
-    System.out.println(" --- " + session.measurement.stat().books());
-
     
     for (Measurement.MBook mbook : session.measurement.stat().books()) {
       if (mbook.name().equals("")) {
@@ -354,6 +353,61 @@ public class JDCli {
       }*/
   }
 
+  private void printDiffHtml() {
+    JunedayStat startStats = session.start;
+    JunedayStat stopStats = session.stop;
+    HtmlExporter he = new HtmlExporter(session.measurement);
+    
+    System.out.println(he.export());
+
+    /*
+    
+    for (Measurement.MBook mbook : session.measurement.stat().books()) {
+      if (mbook.name().equals("")) {
+        continue;
+      }
+      System.out.println(" ? " + mbook.name());
+      //      System.out.println(" - " + mbook.chapters.size() + " chapters");
+      for (Measurement.MChapter mchapter : mbook.chapters()) { 
+        //System.out.println(" --- " + mchapter.name);
+        int videoDiffCount = mchapter.diffVideosStart().size() + mchapter.diffVideosStop().size();
+        int channelDiffCount = mchapter.diffChannelsStart().size() + mchapter.diffChannelsStop().size();
+        int diff = videoDiffCount + channelDiffCount;
+        
+        if ( diff > 0) {
+          System.out.println("  " + mchapter.name());
+        }
+        if (channelDiffCount>0) {
+          System.out.println("    channels");
+          for (String c : mchapter.diffChannelsStop()) {
+            System.out.println("    + " + c);
+          }
+          for (String c : mchapter.diffChannelsStart()) {
+            System.out.println("    - " + c);
+          }
+        }
+        if (videoDiffCount>0) {
+          System.out.println("    videos");
+          for (String v : mchapter.diffVideosStop()) {
+            System.out.println("    + " + v);
+          }
+          for (String v : mchapter.diffVideosStart()) {
+            System.out.println("    - " + v);
+          }
+        }
+      }
+      Map<CodeSummary.ProgLang, CodeSummary.Stat> langStat =
+        session.measurement.stat().code().langStat();
+      for (Map.Entry<CodeSummary.ProgLang, CodeSummary.Stat> entry : langStat.entrySet())
+        {
+          System.out.println(" --- " + entry.getKey() + " | " + entry.getValue());
+        }
+    }
+    */
+    
+  }
+
+  
   private void startSession() {
     switch (session.mode) {
     case PRINT:
@@ -364,6 +418,9 @@ public class JDCli {
       break;
     case BOOK:
       printBook();
+      break;
+    case DIFF_HTML:
+      printDiffHtml();
       break;
     default:
       System.err.println("No or faulty mode found...");

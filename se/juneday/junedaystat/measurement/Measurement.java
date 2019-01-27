@@ -1,4 +1,4 @@
-package se.juneday.junedaystat.domain;
+package se.juneday.junedaystat.measurement;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,19 +24,53 @@ public class Measurement {
 
   private JunedayStat start;
   private JunedayStat stop;
+  private MStat mstat;
   public MeasurementObject<String> measuredStringList ;
+  public MeasurementObject<Presentation> measuredPresentationList ;
 
-  //  List<MBook> mbooks;
   public Measurement(JunedayStat start, JunedayStat stop) {
     this.start = start;
     this.stop = stop;
     measuredStringList = new MeasurementObject<String>();
+    measuredPresentationList = new MeasurementObject<Presentation>();
   }
   
   public Measurement() {
     ;
   }
 
+  public MStat stat(){
+    if (mstat==null) {
+      mstat = new MStat();
+      diffBooks(start.books(), stop.books());
+      mstat.code = new MCode();
+      mstat.code.langStat = diffCode();
+      mstat.pod = new MPod();
+      mstat.pod.podcasts = stop.podStat().podCasts() - start.podStat().podCasts();
+      mstat.video = new MVideo();
+      mstat.video.videos = stop.videoSummary().videos() - start.videoSummary().videos();
+    }
+    return mstat;
+  }
+
+  private Map<CodeSummary.ProgLang, CodeSummary.Stat> diffCode() {
+    CodeSummary startCode = start.codeSummary();
+    CodeSummary stopCode = stop.codeSummary();
+    Map<CodeSummary.ProgLang, CodeSummary.Stat> diffedCode
+      = new HashMap<>();
+    
+    for (CodeSummary.ProgLang lang : CodeSummary.ProgLang.values()) {
+      CodeSummary.Stat startStat = startCode.stat(lang.toString());
+      CodeSummary.Stat stopStat = stopCode.stat(lang.toString());
+      int loc = stopStat.loc() - startStat.loc();
+      int files = stopStat.files() - startStat.files();
+      diffedCode.put(lang, new CodeSummary.Stat(lang, loc, files));
+    }
+    return diffedCode;
+  }
+  
+
+  
   /*  public Measurement(LocalDate startDate, LocalDate stopDate) {
     Measurement measurement = new Measurement();
     measurement.startJunedayStat().date(startDate);
@@ -127,11 +161,11 @@ public class Measurement {
     return c;
   }
 
-  /*
   private void diffBooks(List<Book> startBooks, List<Book> stopBooks) {
-     mbooks = new ArrayList<MBook>();
-     Set<String> bookTitles = bookTitlesUnion(start.books(), stop.books());
+    mstat.books = new ArrayList<>();
+    Set<String> bookTitles = bookTitlesUnion(start.books(), stop.books());
 
+     // Loop through books
      for (String title : bookTitles) {
        Book startBook = findBook(startBooks, title);
        Book stopBook = findBook(stopBooks, title);
@@ -141,41 +175,32 @@ public class Measurement {
 
        List<Chapter> startChapters = startBook.chapters();
        List<Chapter> stopChapters = stopBook.chapters();
+       
        Set<String> chapterTitles = chapterTitlesUnion(startChapters, stopChapters);
-       for (String chapter : chapterTitles) {
-         Chapter startChapter = findChapter(startChapters, chapter);
-         Chapter stopChapter = findChapter(stopChapters, chapter);
-
-         MChapter m = new MChapter();
-         m.name = chapter;
-         System.out.println(chapter);
-
-         m.pages[0] = startChapter.pages();
-         m.pages[1] = stopChapter.pages();
-         m.pages[2] = m.pages[1] - m.pages[0];
-
-         m.channels[0] = startChapter.channelUrls().size();
-         m.channels[1] = stopChapter.channelUrls().size();
-         m.channels[2] = m.channels[1] - m.channels[0];
-         
-         m.videos[0] = startChapter.videoUrls().size();
-         m.videos[1] = stopChapter.videoUrls().size();
-         m.videos[2] = m.videos[1] - m.videos[0];
-         
-         m.presentationPages[0] = startChapter.presentations().size();
-         m.presentationPages[1] = stopChapter.presentations().size();
-         m.presentations[2] = m.presentations[1] - m.presentations[0] ;
-         
-         m.presentationPages[0] = startChapter.presentationsPages();
-         m.presentationPages[1] = stopChapter.presentationsPages();
-         m.presentationPages[2] = m.presentationPages[1] - m.presentationPages[0] ;
-         
-         mbook.chapters.add(m);
+       // Loop through chapters
+       for (String chapterTitle : chapterTitles) {
+         Chapter startChapter = findChapter(startChapters, chapterTitle);
+         Chapter stopChapter = findChapter(stopChapters, chapterTitle);
+         MChapter mchapter = new MChapter();
+         mchapter.diffVideosStart = 
+           measuredStringList.listDiff(videos(startBook, chapterTitle),
+                                       videos(stopBook, chapterTitle));
+         mchapter.diffVideosStop = 
+           measuredStringList.listDiff(videos(stopBook, chapterTitle),
+                                       videos(startBook, chapterTitle));
+         mchapter.diffChannelsStart =
+           measuredStringList.listDiff(channels(startBook, chapterTitle),
+                                       channels(stopBook, chapterTitle));
+         mchapter.diffChannelsStop =
+           measuredStringList.listDiff(channels(stopBook, chapterTitle),
+                                       channels(startBook, chapterTitle));
+         mchapter.name = chapterTitle;
+         mbook.chapters.add(mchapter);
        }
-       mbooks.add(mbook);
+       mstat.books.add(mbook);
      }
   }
-  */
+
   public JunedayStat startJunedayStat() {
     return start;
   }
@@ -198,24 +223,104 @@ public class Measurement {
     }
     return 0;
   }
-  /*
+
+  public static class MStat {
+    private MPod pod;
+    private MVideo video;
+    private List<MBook> books;
+    private MCode code;
+
+    public MPod pod(){
+      return pod;
+    }
+    public MVideo video(){
+      return video;
+    }
+    public List<MBook> books(){
+      return books;
+    }
+    public MCode code(){
+      return code;
+    }
+    
+  }
+  
+  public static class MPod {
+    private int podcasts;
+    public int podcasts() {
+      return podcasts;
+    }
+  }
+  
+  public static class MVideo {
+    private int videos;
+    public int videos() {
+      return videos;
+    }
+  }
+  
   public static class MBook {
-    public List<MChapter> chapters;
-    public String name;
+    private String name;
+    private List<MChapter> chapters;
+    public String name() {
+      return name;
+    }
+    public List<MChapter> chapters() {
+      return chapters;
+    }
+  }
+  
+  public static class MCode {
+    private Map<CodeSummary.ProgLang, CodeSummary.Stat> langStat;
+    public Map<CodeSummary.ProgLang, CodeSummary.Stat> langStat() {
+      return langStat;
+    }
   }
   
   public static class MChapter {
-    public String name;
-    public int pages[] = new int[3];
-    int channels[] = new int[3];
-    int videos[] = new int[3];
-    int presentations[] = new int[3];
-    int presentationPages[] = new int[3];
-
- }
-
+    private String name;
+    private List<String> diffVideosStart ;
+    private List<String> diffVideosStop ;
+    private List<String> diffChannelsStart ;
+    private List<String> diffChannelsStop;
+    private List<MPresentation> diffPresentationsStart ;
+    private List<MPresentation> diffPresentationsStop;
+    public String name(){
+      return name;
+    }
+    public List<String> diffVideosStart() {
+      return diffVideosStart;
+    }
+    public List<String> diffVideosStop() {
+      return diffVideosStop;
+    }
+    public List<String> diffChannelsStart() {
+      return diffChannelsStart;
+    }
+    public List<String> diffChannelsStop() {
+      return diffChannelsStop;
+    }
+    public List<MPresentation> diffPresentationsStart() {
+      return diffPresentationsStart;
+    }
+    public List<MPresentation> diffPresentationsStop() {
+      return diffPresentationsStop;
+    }
+  }
+  
+  public static class MPresentation {
+    private String name;
+    private int pages;
+    public String name() {
+      return name;
+    }
+    public int pages() {
+      return pages;
+    }
+  }
+  
   public MBook findMBook(String title) {
-    for (MBook mb : mbooks) {
+    for (MBook mb : mstat.books) {
       if (mb.name.equals(title)) {
         return mb;
       }
@@ -225,8 +330,6 @@ public class Measurement {
     b.chapters = new ArrayList<MChapter>();
     return b;
   }
-
-  */
 
   public static Chapter findChapter(Book b, String chapterTitle) {
     for (Chapter c : b.chapters()) {
@@ -255,7 +358,6 @@ public class Measurement {
 
   public class MeasurementObject<T> {
 
-    // returns 
     public List<T> listDiff(List<T> first, List<T> second) {
       List<T> diffList = new ArrayList<>();
       for (T o : first) {
@@ -266,5 +368,17 @@ public class Measurement {
       return diffList;
     }
   }
+  /*
+  public interface Exporter {
+    void addName(String name);
+    void addChapters(List<Chapter> chapters);
+  }
+
+  public void export(Exporter exp) {
+    exp.addName(name);
+    exp.addChapters(chapters);
+  }
+  */
+
   
 }

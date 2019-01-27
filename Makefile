@@ -12,9 +12,17 @@ JAVA_SRC= \
   ./se/juneday/junedaystat/domain/Presentation.java \
   ./se/juneday/junedaystat/domain/PodStat.java \
   ./se/juneday/junedaystat/domain/BooksSummary.java \
+  ./se/juneday/junedaystat/domain/exporter/GenericBookExporter.java \
+  ./se/juneday/junedaystat/domain/exporter/JsonBookExporter.java \
+  ./se/juneday/junedaystat/domain/exporter/GenericChapterExporter.java \
+  ./se/juneday/junedaystat/domain/exporter/JsonChapterExporter.java \
+  ./se/juneday/junedaystat/domain/exporter/GenericPresentationExporter.java \
+  ./se/juneday/junedaystat/domain/exporter/JsonPresentationExporter.java \
   ./se/juneday/junedaystat/net/StatisticsParser.java \
-  ./se/juneday/junedaystat/domain/Measurement.java \
+  ./se/juneday/junedaystat/measurement/Measurement.java \
   ./se/juneday/junedaystat/ui/JDCli.java
+#  ./se/juneday/junedaystat/domain/exporter/SQLChapterExporter.java \
+
 
 JAVA_CLASSES=$(JAVA_SRC:.java=.class)
 
@@ -58,13 +66,14 @@ info:
 
 clean:
 	rm -f $(JAVA_CLASSES)
+	find . -name "*.class" | xargs rm -fr
 
 DATA_DIR=$(HOME)/.juneday/stat/cache
 DATA_DIR_ARG=-Djuneday_data_dir=$(DATA_DIR)
 
 %.json:
 	@echo "-- Downloading $@ --"
-	@mkdir -p $(DATA_DIR)/$(shell echo $@ | sed -e "s,${DATA_DIR},,g" -e "s,/jd-stats\.json,,g")
+	mkdir -p $(DATA_DIR)/$(shell echo $@ | sed -e "s,${DATA_DIR},,g" -e "s,/jd-stats\.json,,g")
 	curl -s http://rameau.sandklef.com/junedaywiki-stats/$(shell echo $@ | sed "s,$(DATA_DIR),,g") -o $@
 #	curl -s http://rameau.sandklef.com/junedaywiki-stats/$(shell echo $@ | sed "$(DATA_DIR)/jd-stats-\([0-9]*\)\.json,\1/jd-stats.json, g") -o $@
 
@@ -72,10 +81,15 @@ DATA_DIR_ARG=-Djuneday_data_dir=$(DATA_DIR)
 jar: $(JAVA_CLASSES)
 	jar cvf jds-stat.jar $(JAVA_CLASSES)
 
-run: $(DATA_DIR)/20181107/jd-stats.json $(DATA_DIR)/20181231/jd-stats.json $(DATA_DIR)/20190114/jd-stats.json $(DATA_DIR)/jd-stats-$(shell date +%Y%m%d).json $(DATA_DIR)/jd-stats-$(shell date --date="7 day ago" +%Y%m%d).json $(JAVA_CLASSES)
+JSON_FILES=$(DATA_DIR)/20190127/jd-stats.json $(DATA_DIR)/20181107/jd-stats.json $(DATA_DIR)/20181231/jd-stats.json $(DATA_DIR)/20190114/jd-stats.json $(DATA_DIR)/$(TODAY)/jd-stats.json $(DATA_DIR)/$(WEEKAGO)/jd-stats.json $(DATA_DIR)/20181107/jd-stats.json $(DATA_DIR)/20181231/jd-stats.json 
+
+json: $(JSON_FILES)
+
+
+run: $(JSON_FILES) $(JAVA_CLASSES)
 	java $(DATA_DIR_ARG) -cp $(CLASSPATH) $(CLI)
 
-run: $(DATA_DIR)/20181231/jd-stats.json $(DATA_DIR)/20181101/jd-stats.json $(DATA_DIR)/20181213/jd-stats.json $(DATA_DIR)/20190114/jd-stats.json  $(DATA_DIR)/20190112/jd-stats.json $(JAVA_CLASSES)
+run: $(JSON_FILES) $(JAVA_CLASSES)
 	java $(DATA_DIR_ARG) -cp $(CLASSPATH) $(CLI)
 
 2018: $(DATA_DIR)/20180101/jd-stats.json $(DATA_DIR)/20190101/jd-stats.json
@@ -84,5 +98,8 @@ run: $(DATA_DIR)/20181231/jd-stats.json $(DATA_DIR)/20181101/jd-stats.json $(DAT
 TODAY=$(shell date +%Y%m%d)
 WEEKAGO=$(shell date --date="7 day ago" +%Y%m%d)
 
-book: $(DATA_DIR)/20181107/jd-stats.json $(DATA_DIR)/20181231/jd-stats.json $(DATA_DIR)/20190114/jd-stats.json $(DATA_DIR)/$(TODAY)/jd-stats.json $(DATA_DIR)/$(WEEKAGO)/jd-stats.json $(JAVA_CLASSES)
+book: $(JSON_FILES)  $(JAVA_CLASSES)
 	java $(DATA_DIR_ARG) -cp $(CLASSPATH) $(CLI) $(TODAY) $(WEEKAGO)  --books
+
+book2: $(JSON_FILES)  $(JAVA_CLASSES)
+	java $(DATA_DIR_ARG) -cp $(CLASSPATH) $(CLI) 20181107  20181231 --books

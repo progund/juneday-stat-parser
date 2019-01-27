@@ -25,9 +25,10 @@ import se.juneday.junedaystat.domain.Chapter;
 import se.juneday.junedaystat.domain.CodeSummary;
 import se.juneday.junedaystat.domain.JunedayStat;
 import se.juneday.junedaystat.domain.PodStat;
-import se.juneday.junedaystat.domain.Measurement;
+import se.juneday.junedaystat.measurement.Measurement;
 import se.juneday.junedaystat.domain.Presentation;
 import se.juneday.junedaystat.domain.VideoStat;
+import se.juneday.junedaystat.domain.exporter.*;
 import static se.juneday.junedaystat.net.StatisticsParser.jsonToJunedayStat;
 import se.juneday.junedaystat.utils.Utils;
 
@@ -109,11 +110,11 @@ public class JDCli {
     System.out.println(session.start);
     System.out.println(session.stop);
     /*
-    int diffSum=0;
-    int sumStart=0;
-    int sumStop=0;
+      int diffSum=0;
+      int sumStart=0;
+      int sumStop=0;
 
-    for (String title : Measurement.bookTitlesUnion(startStats.books(), stopStats.books())) {
+      for (String title : Measurement.bookTitlesUnion(startStats.books(), stopStats.books())) {
       System.out.print(" * " + title);
       Book startBook = Measurement.findBook(startStats.books(), title);
       Book stopBook = Measurement.findBook(stopStats.books(), title);
@@ -126,8 +127,8 @@ public class JDCli {
       sumStop += stopPages;
       diffSum += diff;
       System.out.println(" " + diff + "   ---> " + diffSum );
-    }
-    System.out.println(" " + sumStart + " " + sumStop );
+      }
+      System.out.println(" " + sumStart + " " + sumStop );
     */
   }
 
@@ -168,6 +169,23 @@ public class JDCli {
       System.out.format(formatStrNumbers, title, startPages, stopPages, diff, diff/((float)dailyDiff));
       // System.out.print(" * " + title);
       // System.out.println(" " + diff + "   ---> " + diffSum );
+
+
+      JsonBookExporter je = new JsonBookExporter();
+      SQLBookExporter se = new SQLBookExporter();
+      startBook.export(se);
+      System.out.println(se.toString());
+
+      System.out.println("-----------------------------------------------------------");
+      if (startBook.name().equals("Programming with Java")) {
+        startBook.export(je);
+        System.out.println("-----------------------------------------------------------");
+        System.out.println("-----------------------------------------------------------");
+        System.out.println(je.toString());
+        System.out.println("-----------------------------------------------------------");
+        System.out.println("-----------------------------------------------------------");
+        System.out.println("-----------------------------------------------------------");
+      }
     }
     System.out.println("-----------------------------------------------------------");
     System.out.format(formatStrNumbers, "Total", sumStart, sumStop, (sumStop - sumStart), (sumStop - sumStart)/((float)dailyDiff));
@@ -228,6 +246,8 @@ public class JDCli {
     System.out.format(" * %5.2f videos\n" , videoDaily );
     System.out.format(" * %5.2f presentations\n", presDaily);
     System.out.format(" * %5.2f presentation pages\n", presPagesDaily);
+
+
     
 
   }
@@ -235,6 +255,55 @@ public class JDCli {
   private void printBook() {
     JunedayStat startStats = session.start;
     JunedayStat stopStats = session.stop;
+    System.out.println(" --- " + session);
+    System.out.println(" --- " + session.measurement);
+    System.out.println(" --- " + session.measurement.stat());
+    System.out.println(" --- " + session.measurement.stat().books());
+
+    
+    for (Measurement.MBook mbook : session.measurement.stat().books()) {
+      if (mbook.name().equals("")) {
+        continue;
+      }
+      System.out.println(" - " + mbook.name());
+      //      System.out.println(" - " + mbook.chapters.size() + " chapters");
+      for (Measurement.MChapter mchapter : mbook.chapters()) { 
+        //System.out.println(" --- " + mchapter.name);
+        int videoDiffCount = mchapter.diffVideosStart().size() + mchapter.diffVideosStop().size();
+        int channelDiffCount = mchapter.diffChannelsStart().size() + mchapter.diffChannelsStop().size();
+        int diff = videoDiffCount + channelDiffCount;
+        
+        if ( diff > 0) {
+          System.out.println("  " + mchapter.name());
+        }
+        if (channelDiffCount>0) {
+          System.out.println("    channels");
+          for (String c : mchapter.diffChannelsStop()) {
+            System.out.println("    + " + c);
+          }
+          for (String c : mchapter.diffChannelsStart()) {
+            System.out.println("    - " + c);
+          }
+        }
+        if (videoDiffCount>0) {
+          System.out.println("    videos");
+          for (String v : mchapter.diffVideosStop()) {
+            System.out.println("    + " + v);
+          }
+          for (String v : mchapter.diffVideosStart()) {
+            System.out.println("    - " + v);
+          }
+        }
+      }
+      Map<CodeSummary.ProgLang, CodeSummary.Stat> langStat =
+        session.measurement.stat().code().langStat();
+      for (Map.Entry<CodeSummary.ProgLang, CodeSummary.Stat> entry : langStat.entrySet())
+        {
+          System.out.println(" --- " + entry.getKey() + " | " + entry.getValue());
+        }
+    }
+
+    /*
     for (String bookTitle : Measurement.bookTitlesUnion(startStats.books(), stopStats.books())) {
       if (bookTitle.equals("")) { continue; }
       Book startBook = Measurement.findBook(startStats.books(), bookTitle);
@@ -282,7 +351,7 @@ public class JDCli {
         }
         
       } 
-    }
+      }*/
   }
 
   private void startSession() {
@@ -307,5 +376,5 @@ public class JDCli {
     cli.parseArguments(args);
     cli.startSession();
   }
-  
+
 }

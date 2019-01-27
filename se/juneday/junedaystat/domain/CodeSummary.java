@@ -18,6 +18,7 @@ public class CodeSummary {
   public static class Stat {
     ProgLang lang;
     int loc;
+    int files;
 
     public ProgLang lang() {
       return lang;
@@ -31,7 +32,6 @@ public class CodeSummary {
       return files;
     }
 
-    int files;
 
     public Stat(ProgLang lang, int loc, int files) {
       this.loc = loc;
@@ -49,7 +49,7 @@ public class CodeSummary {
     @Override
     public String toString() {
       return "Stat{" +
-        ", lang=" + lang +
+        "  lang=" + lang +
         ", loc=" + loc +
         ", files=" + files +
         '}';
@@ -75,7 +75,7 @@ public class CodeSummary {
   }
   
   public Stat stat(String lang) {
-    return langStat.get(lang);
+    return langStat.get(ProgLang.valueOf(lang));
   }
 
   public CodeSummary() {

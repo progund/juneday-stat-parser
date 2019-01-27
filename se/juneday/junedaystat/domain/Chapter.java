@@ -107,5 +107,21 @@ public class Chapter {
     return name;
   }
 
+  public interface Exporter {
+    void addName(String name);
+    void addPages(int pages);
+    void addChannelUrls(List<String> channels);
+    void videoUrls(List<String> videos);
+    void presentations(List<Presentation> presentations);
+  }
 
+  public void export(Exporter exp) {
+    exp.addName(name);
+    exp.addPages(pages);
+    exp.addChannelUrls(channelUrls);
+    exp.videoUrls(videoUrls);
+    exp.presentations(presentations);
+  }
+  
+  
 }

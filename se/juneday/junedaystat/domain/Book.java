@@ -80,4 +80,14 @@ public class Book {
     return builder.toString();
   }
 
+  public interface Exporter {
+    void addName(String name);
+    void addChapters(List<Chapter> chapters);
+  }
+
+  public void export(Exporter exp) {
+    exp.addName(name);
+    exp.addChapters(chapters);
+  }
+  
 }

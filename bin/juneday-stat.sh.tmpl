@@ -1,0 +1,80 @@
+#!/bin/bash
+
+JDS_BIN_DIR=__INSTALL_BIN_DIR__
+JDS_LIB_DIR=__INSTALL_LIB_DIR__
+JDS_CACHE_DIR=__INSTALL_CACHE_DIR__
+
+BASE_URL=http://rameau.sandklef.com/junedaywiki-stats/
+
+DATE_FMT="%Y%m%d"
+
+if [ ! -d $JDS_CACHE_DIR ]
+then
+    mkdir -p  ${JDS_CACHE_DIR}
+fi
+
+START=$(date --date="7 day ago" +$DATE_FMT)
+STOP=$(date +$DATE_FMT)
+
+while [ "$1" != "" ]
+do
+#    echo "1: $1"
+    case "$1" in
+        "--clean")
+            rm -fr $JDS_CACHE_DIR
+            ;;
+        "--dailly"|"-d")
+            DAILY=true
+            ;;
+        "--weekly"|"-w")
+            WEEKLY=true
+            ;;
+        "--monthly"|"-m")
+            MONTHLY=true
+            ;;
+        "--yearly"|"-y")
+            YEARLY=true
+            ;;
+        "--2018")
+            START=20180101
+            STOP=20190101
+            ;;
+        "--2017")
+            START=20170101
+            STOP=20180101
+            ;;
+        "--2019")
+            START=20190101
+            STOP=$(date +$DATE_FMT)
+            ;;
+        *)
+            if [ "$START" != "" ]
+            then
+                START=$1
+            fi
+            if [ "$STOP" != "" ]
+            then
+                STOP=$1
+            fi
+            ;;
+    esac
+    shift
+done
+
+download_json() {
+    DATE=$1
+    FILE=$JDS_CACHE_DIR/jd-stat-$DATE.json
+    if [ ! -f $FILE ]
+    then
+        curl $BASE_URL/$DATE/jd-stat.json -o $FILE
+    fi
+}
+
+download_json $START
+download_json $STOP
+
+CLASSPATH=${JDS_LIB_DIR}/org.json.jar
+CLASSPATH=${CLASSPATH}:${JDS_LIB_DIR}/jds-stat.jar
+CLASSPATH=${CLASSPATH}:.
+
+java -cp ${CLASSPATH} se.juneday.junedaystat.ui.JDCli $START $STOP

@@ -22,4 +22,29 @@ public class Presentation {
   public String toString() {
     return "" + name + " (" + pages + ")";
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o ==null) {
+      return false;
+    }
+    if (! (o instanceof Presentation) ) {
+      return false;
+    }
+    Presentation other = (Presentation) o;
+    if (name.equals(other.name) && pages == other.pages ) {
+      return true;
+    }
+    return false;
+  }
+  
+  public interface Exporter {
+    void addName(String name);
+    void addPages(int pages);
+  }
+
+  public void export(Exporter exp) {
+    exp.addName(name);
+    exp.addPages(pages);
+  }
 }

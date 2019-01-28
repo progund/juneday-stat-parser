@@ -1,6 +1,7 @@
 package se.juneday.junedaystat.domain;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.lang.StringBuilder;
 
@@ -102,7 +103,27 @@ public class Chapter {
     return builder.toString();
   }
 
+  /*  public boolean equals(Object o) {
+    System.err.println("equals()");
+    if (o ==null) {
+      return false;
+    }
+    if (! (o instanceof Chapter) ) {
+      return false;
+    }
 
+    Chapter otherChapter = (Chapter) o;
+
+    if ( name.equals(otherChapter.name)
+         &&
+         pages == otherChapter.pages
+         &&
+         new HashSet<>(channelUrls).equals(new HashSet<>(otherChapter.channelUrls))) {
+      return true;
+    }
+    return false;
+    }*/
+  
   public String name() {
     return name;
   }

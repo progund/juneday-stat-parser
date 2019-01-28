@@ -202,10 +202,30 @@ public class Measurement {
          mchapter.diffPresentationsStop =
            measuredPresentationList.listDiff(presentations(stopBook, chapterTitle),
                                              presentations(startBook, chapterTitle));
+
+
+         // Only add chapters with a diff to the book
+         if ( mchapter.diffVideosStart.size() != 0 
+              || mchapter.diffVideosStop.size() != 0
+              || mchapter.diffChannelsStart.size() != 0
+              || mchapter.diffChannelsStop.size() != 0
+              || mchapter.diffPresentationsStart.size() != 0
+              || mchapter.diffPresentationsStop.size() != 0) {
+           mchapter.name = chapterTitle;
+           mbook.chapters.add(mchapter);
+           System.err.println(" add chapter: " + chapterTitle);
+         } else {
+           System.err.println(" NOT add chapter: " + chapterTitle
+                              + " " + mchapter.diffVideosStart.size()
+                              + " " + mchapter.diffVideosStop.size()
+                              + " " + mchapter.diffChannelsStart.size()
+                              + " " + mchapter.diffChannelsStop.size()
+                              + " " + mchapter.diffPresentationsStart.size()
+                              + " " + mchapter.diffPresentationsStop.size()
+                              );
+         }
          
          
-         mchapter.name = chapterTitle;
-         mbook.chapters.add(mchapter);
        }
        mstat.books.add(mbook);
      }

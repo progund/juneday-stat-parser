@@ -9,7 +9,6 @@ import java.util.logging.SimpleFormatter;
 
 public class Utils {
 
-
   public static final String DATE_FORMAT = "yyyyMMdd";
   public static final String TWO_DIGITS = "%02d";
   public static final String NEWLINE = "\n";

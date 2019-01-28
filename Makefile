@@ -80,7 +80,7 @@ DATA_DIR_ARG=-Djuneday_data_dir=$(DATA_DIR)
 
 
 jar: $(JAVA_CLASSES)
-	jar cvf jds-stat.jar $(JAVA_CLASSES)
+	jar cvf jds-stat.jar se
 
 JSON_FILES=$(DATA_DIR)/20190127/jd-stats.json $(DATA_DIR)/20181107/jd-stats.json $(DATA_DIR)/20181231/jd-stats.json $(DATA_DIR)/20190114/jd-stats.json $(DATA_DIR)/$(TODAY)/jd-stats.json $(DATA_DIR)/$(WEEKAGO)/jd-stats.json $(DATA_DIR)/20181107/jd-stats.json $(DATA_DIR)/20181231/jd-stats.json 
 

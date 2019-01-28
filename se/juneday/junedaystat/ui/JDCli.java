@@ -10,9 +10,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.time.LocalDate;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.time.temporal.ChronoUnit.WEEKS;
@@ -31,6 +28,7 @@ import se.juneday.junedaystat.domain.Presentation;
 import se.juneday.junedaystat.domain.VideoStat;
 import se.juneday.junedaystat.domain.exporter.*;
 import static se.juneday.junedaystat.net.StatisticsParser.jsonToJunedayStat;
+import se.juneday.junedaystat.net.StatisticsParser;
 import se.juneday.junedaystat.utils.Utils;
 
 public class JDCli {
@@ -58,22 +56,6 @@ public class JDCli {
       this.stop = stop;
       measurement = new Measurement(start, stop);    
     }
-  }
-
-  public static JunedayStat readFile(String dateStr) {
-    String dataDir = System.getProperty("juneday_data_dir","data");
-    String fileName = dataDir + "/" + dateStr + "/jd-stats.json";
-    // System.out.println(dataDir);
-    // System.out.println(fileName);
-    LocalDate date = Utils.stringToLocalDate(dateStr);
-    try {
-      return jsonToJunedayStat(date,
-                               new String(Files.readAllBytes(Paths.get(fileName))));
-    } catch (Exception e) {
-      System.err.println("Failed, parsing: " + fileName);
-      e.printStackTrace();
-    }
-    return null;
   }
 
   public void parseArguments(String[] args) {
@@ -106,8 +88,8 @@ public class JDCli {
     
     session =
       new JDSSession(mode,
-                     readFile(startString),
-                     readFile(stopString));
+                     StatisticsParser.readFile(startString),
+                     StatisticsParser.readFile(stopString));
   }
 
   private void printMeasurement() {

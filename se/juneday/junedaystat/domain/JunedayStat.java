@@ -3,6 +3,8 @@ package se.juneday.junedaystat.domain;
 import java.util.List;
 import java.time.LocalDate;
 
+import se.juneday.junedaystat.utils.Utils;
+
 public class JunedayStat {
 
   public static final String JDSTAT_BOOK_SUMMARY = "book-summary";
@@ -50,6 +52,7 @@ public class JunedayStat {
   public PodStat podStat() {
     return podStat;
   }
+
 
   @Override
   public String toString() {

@@ -13,6 +13,8 @@ import se.juneday.junedaystat.measurement.Measurement.MChapter;
 import se.juneday.junedaystat.domain.CodeSummary;
 import se.juneday.junedaystat.domain.JunedayStat;
 
+import se.juneday.junedaystat.utils.Utils;
+
 import java.util.Map;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.time.temporal.ChronoUnit.WEEKS;
@@ -70,10 +72,35 @@ public class HtmlExporter {
     builder
       .append(export(stat.code()));
 
-    builder.append("Books<br>");
+    int pageSum=0;
+    int channelSum=0;
+    int videoSum=0;
+    int presSum=0;
     for (MBook book : stat.books()) {
-      builder.append("<p>Book: " + book.name() + " [ <a href=\"" + WIKI_URL+"/"+book.name() + "\">current | </a> <a href=\"" + WIKI_URL+"?title=" + book.name() + "&action=history\"> history</a> ]")
-        .append(" [ ")
+      pageSum += book.pages();
+      channelSum += book.channels();
+      videoSum += book.videos();
+      presSum += book.presentations();
+    }
+    
+    builder
+      .append("Books [")
+      .append(intToColorString(pageSum))
+      .append(" pages ")
+      .append(" | ")
+      .append(intToColorString(channelSum))
+      .append(" channels ")
+      .append(" | ")
+      .append(intToColorString(videoSum))
+      .append(" videos ")
+      .append(" | ")
+      .append(intToColorString(presSum))
+      .append(" presentations] ");
+    
+    for (MBook book : stat.books()) {
+      builder.append("<p>Book: ")
+        .append(book.name())
+        .append("  [ ")
         .append(intToColorString(book.pages()))
         .append(" pages ")
         .append(" | ")
@@ -85,7 +112,14 @@ public class HtmlExporter {
         .append(" | ")
         .append(intToColorString(book.presentations()))
         .append(" presentations ")
-        .append(" ] </p>")
+        .append(" ]")
+        .append(" [ <a href=\"" + WIKI_URL+"/"+book.name() + "\">current </a>")
+        .append(" | <a href=\"" + WIKI_URL+"?title=" + book.name() + "&action=history\"> history</a> | ")
+        .append(" [ JSON:")
+        .append("<a href=\"" + JSON_URL + "/" + Utils.dateToString(measurement.startJunedayStat().date()) + "/jd-stats.json\"> " + Utils.dateToString(measurement.startJunedayStat().date()) + "</a> |")
+        .append("<a href=\"" + JSON_URL + "/" + Utils.dateToString(measurement.stopJunedayStat().date()) + "/jd-stats.json\"> " + Utils.dateToString(measurement.stopJunedayStat().date()) + "</a> ]")
+        .append(" ]")
+        .append("</p>")
         .append(export(book));
     }
     return builder.toString();
@@ -113,7 +147,9 @@ public class HtmlExporter {
   public String export(MBook book)  {
     StringBuilder builder = new StringBuilder();
     builder
-      .append("  <button class=\"collapsible\">Show more</button>")
+      .append("  <span style=\"color:black; float:none;\">")
+      .append("    <button class=\"collapsible\">Show more</button>")
+      .append("  </span>")
       .append("  <div class=\"content\">")
       .append("  <div class=\"rTable\">\n\n")
       .append("    <div class=\"rTableRow\">\n")
@@ -131,10 +167,10 @@ public class HtmlExporter {
     builder
       .append("    <div class=\"rTableRow\">\n")
       .append("      <div class=\"rTableHead\"><strong>Total</strong></div>\n")
-      .append("      <div class=\"rTableHead\"><strong>" + book.pages() + "</strong></div>\n")
-      .append("      <div class=\"rTableHead\"><strong>" + book.channels() + "</strong></div>\n")
-      .append("      <div class=\"rTableHead\"><strong>" + book.videos() + "</strong></div>\n")
-      .append("      <div class=\"rTableHead\"><strong>" + book.presentations() + "</strong></div>\n")
+      .append("      <div class=\"rTableHead\"><strong>" + statPerDay(book.pages()) + "</strong></div>\n")
+      .append("      <div class=\"rTableHead\"><strong>" + statPerDay(book.channels()) + "</strong></div>\n")
+      .append("      <div class=\"rTableHead\"><strong>" + statPerDay(book.videos()) + "</strong></div>\n")
+      .append("      <div class=\"rTableHead\"><strong>" + statPerDay(book.presentations()) + "</strong></div>\n")
       .append("  </div>");
 
       builder

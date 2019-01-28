@@ -8,6 +8,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import se.juneday.junedaystat.domain.Book;
 import se.juneday.junedaystat.domain.BooksSummary;
@@ -17,11 +20,28 @@ import se.juneday.junedaystat.domain.JunedayStat;
 import se.juneday.junedaystat.domain.PodStat;
 import se.juneday.junedaystat.domain.Presentation;
 import se.juneday.junedaystat.domain.VideoStat;
+import se.juneday.junedaystat.utils.Utils;
 
 public class StatisticsParser {
 
 
   private static final String LOG_TAG = StatisticsParser.class.getSimpleName() ;
+
+    public static JunedayStat readFile(String dateStr) {
+    String dataDir = System.getProperty("juneday_data_dir","data");
+    String fileName = dataDir + "/" + dateStr + "/jd-stats.json";
+    // System.out.println(dataDir);
+    // System.out.println(fileName);
+    LocalDate date = Utils.stringToLocalDate(dateStr);
+    try {
+      return jsonToJunedayStat(date,
+                               new String(Files.readAllBytes(Paths.get(fileName))));
+    } catch (Exception e) {
+      System.err.println("Failed, parsing: " + fileName);
+      e.printStackTrace();
+    }
+    return null;
+  }
 
   private static int getIntValue(JSONObject object, String key, int defaultValue) {
     int ret = defaultValue;

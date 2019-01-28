@@ -178,10 +178,18 @@ public class Measurement {
        
        Set<String> chapterTitles = chapterTitlesUnion(startChapters, stopChapters);
        // Loop through chapters
+       int pagesSum = 0;
+       int channelsSum = 0;
+       int videosSum = 0;
+       int presentationsSum = 0;
+       int presentationsPagesSum = 0;
        for (String chapterTitle : chapterTitles) {
          Chapter startChapter = findChapter(startChapters, chapterTitle);
          Chapter stopChapter = findChapter(stopChapters, chapterTitle);
          MChapter mchapter = new MChapter();
+
+         mchapter.pages = stopChapter.pages() - startChapter.pages();
+
          mchapter.diffVideosStart = 
            measuredStringList.listDiff(videos(startBook, chapterTitle),
                                        videos(stopBook, chapterTitle));
@@ -202,6 +210,12 @@ public class Measurement {
          mchapter.diffPresentationsStop =
            measuredPresentationList.listDiff(presentations(stopBook, chapterTitle),
                                              presentations(startBook, chapterTitle));
+         
+         pagesSum += mchapter.pages;
+         channelsSum += mchapter.diffChannelsStop.size() - mchapter.diffChannelsStart.size();
+         videosSum += mchapter.diffVideosStop.size() - mchapter.diffVideosStart.size();
+         presentationsSum += mchapter.diffPresentationsStop.size() - mchapter.diffPresentationsStart.size();;
+         presentationsPagesSum += 0;
 
 
          // Only add chapters with a diff to the book
@@ -210,7 +224,8 @@ public class Measurement {
               || mchapter.diffChannelsStart.size() != 0
               || mchapter.diffChannelsStop.size() != 0
               || mchapter.diffPresentationsStart.size() != 0
-              || mchapter.diffPresentationsStop.size() != 0) {
+              || mchapter.diffPresentationsStop.size() != 0
+              || mchapter.pages != 0) {
            mchapter.name = chapterTitle;
            mbook.chapters.add(mchapter);
            System.err.println(" add chapter: " + chapterTitle);
@@ -227,6 +242,11 @@ public class Measurement {
          
          
        }
+       mbook.pages = pagesSum;
+       mbook.channels = channelsSum;
+       mbook.videos = videosSum;
+       mbook.presentations = presentationsSum;
+       mbook.presentationsPages = presentationsPagesSum;
        mstat.books.add(mbook);
      }
   }
@@ -291,6 +311,11 @@ public class Measurement {
   
   public static class MBook {
     private String name;
+    private int pages;
+    private int videos;
+    private int channels;
+    private int presentations;
+    private int presentationsPages;
     private List<MChapter> chapters;
     public String name() {
       return name;
@@ -298,6 +323,27 @@ public class Measurement {
     public List<MChapter> chapters() {
       return chapters;
     }
+
+    public int pages(){
+      return this.pages;
+    }
+    
+    public int videos(){
+      return this.videos;
+    }
+    
+    public int channels(){
+      return this.channels;
+    }
+    
+    public int presentations(){
+      return this.presentations;
+    }
+    
+    public int presentationsPages(){
+      return this.presentationsPages;
+    }
+        
   }
   
   public static class MCode {
@@ -309,6 +355,7 @@ public class Measurement {
   
   public static class MChapter {
     private String name;
+    private int pages;
     private List<String> diffVideosStart ;
     private List<String> diffVideosStop ;
     private List<String> diffChannelsStart ;
@@ -317,6 +364,9 @@ public class Measurement {
     private List<Presentation> diffPresentationsStop;
     public String name(){
       return name;
+    }
+    public int pages(){
+      return pages;
     }
     public List<String> diffVideosStart() {
       return diffVideosStart;

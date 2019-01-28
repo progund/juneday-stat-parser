@@ -24,8 +24,9 @@ public class HtmlExporter {
   private static final String WIKI_URL = "http://wiki.juneday.se/mediawiki/index.php";
   private static final String JSON_URL = "http://rameau.sandklef.com/junedaywiki-stats/";
     
-  private final static String CSS_STYLE="  <style type=\"text/css\">       .rTable {      display: table;      width: 100%;      }      .rTableRow {      display: table-row;      }      .rTableHeading {      display: table-header-group;      background-color: #ddd;      }      .rTableCell, .rTableHead {      display: table-cell;      padding: 3px 10px;      border: 1px solid #999999;      }      .rTableHeading {      display: table-header-group;      background-color: #ddd;      font-weight: bold;      }      .rTableFoot {      display: table-footer-group;      font-weight: bold;      background-color: #ddd;      }      .rTableBody {      display: table-row-group;      }</style>";
-  //<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js\"></script>   <script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js\"></script>";
+  private final static String CSS_STYLE="  <style type=\"text/css\">       .rTable {      display: table;      }      .rTableRow { display: table-row;      }      .rTableHeading {      display: table-header-group;      background-color: #988;      }      .rTableCell, .rTableHead {   display: table-cell;      padding: 3px 10px;      border: 1px solid #999999;      }      .rTableHeading {      display: table-header-group;      background-color: #ddd;      font-weight: bold; }      .rTableFoot {      display: table-footer-group;      font-weight: bold;      background-color: #ddd;      }      .rTableBody {      display: table-row-group;} .collapsible {  background-color: #eee;  color: black;  cursor: pointer;  padding: 0px;  width: 100%;  border: none;  text-align: left;  outline: none;  font-size: 15px; }.active, .collapsible:hover {  background-color: #555;}.content {  padding: 0 18px;  display: none;  overflow: hidden;  background-color: #f1f1f1;}  </style>";
+
+  private final static String SCRIPT = "<script>var coll = document.getElementsByClassName(\"collapsible\");var i;for (i = 0; i < coll.length; i++) {  coll[i].addEventListener(\"click\", function() {    this.classList.toggle(\"active\");    var content = this.nextElementSibling;    if (content.style.display === \"block\") {      content.style.display = \"none\";    } else {      content.style.display = \"block\";    }  });}</script>";
 
   private Measurement measurement;
   private long days;
@@ -43,14 +44,20 @@ public class HtmlExporter {
     StringBuilder builder = new StringBuilder();
     builder
       .append("<html>")
-      .append("  <body>")
+      .append("<head>")
       .append(CSS_STYLE)
+      .append("</head>")
+      .append("  <body>")
       .append(" start: " + measurement.startJunedayStat().date() + "<br>")
       .append(" stop: " + measurement.stopJunedayStat().date() + "<br>")
       .append(" days: " + days + "<br>");
     
-    builder.append(export(measurement.stat()));
-
+    builder
+      .append(export(measurement.stat()))
+      .append("\n")
+      .append(SCRIPT)
+      .append("\n");
+    
     builder
       .append("  </body>")
       .append("</html>");
@@ -65,10 +72,22 @@ public class HtmlExporter {
 
     builder.append("Books<br>");
     for (MBook book : stat.books()) {
-      builder.append("Book: <a href=\"" + WIKI_URL+"/"+book.name() + "\"> " + book.name() + "</a> (<a href=\"" + WIKI_URL+"?title=" + book.name() + "&action=history\">history</a>)<br>");
-      builder.append(export(book));
+      builder.append("<p>Book: " + book.name() + " [ <a href=\"" + WIKI_URL+"/"+book.name() + "\">current | </a> <a href=\"" + WIKI_URL+"?title=" + book.name() + "&action=history\"> history</a> ]")
+        .append(" [ ")
+        .append(intToColorString(book.pages()))
+        .append(" pages ")
+        .append(" | ")
+        .append(intToColorString(book.channels()))
+        .append(" channels ")
+        .append(" | ")
+        .append(intToColorString(book.videos()))
+        .append(" videos ")
+        .append(" | ")
+        .append(intToColorString(book.presentations()))
+        .append(" presentations ")
+        .append(" ] </p>")
+        .append(export(book));
     }
-    
     return builder.toString();
   }
 
@@ -82,12 +101,24 @@ public class HtmlExporter {
 
   }
 
+  private String intToColorString(int i) {
+    if (i<0) {
+      return "<span style=\"color:red; float:none;\" >" + i + "</span>";
+    } else if (i>0) {
+      return "<span style=\"color:green; float:none;\">" + i + "</span>";
+    } 
+    return "<span style=\"color:black; float:none;\">" + i + "</span>";
+  }
+  
   public String export(MBook book)  {
     StringBuilder builder = new StringBuilder();
     builder
+      .append("  <button class=\"collapsible\">Show more</button>")
+      .append("  <div class=\"content\">")
       .append("  <div class=\"rTable\">\n\n")
       .append("    <div class=\"rTableRow\">\n")
-      .append("      <div class=\"rTableHead\"><strong>Name</strong></div>\n")
+      .append("      <div class=\"rTableHead\"><strong>Chapter</strong></div>\n")
+      .append("      <div class=\"rTableHead\"><strong>Pages</strong></div>\n")
       .append("      <div class=\"rTableHead\"><strong>Channels</strong></div>\n")
       .append("      <div class=\"rTableHead\"><strong>Videos</strong></div>\n")
       .append("      <div class=\"rTableHead\"><strong>Presentation</strong></div>\n")
@@ -96,7 +127,19 @@ public class HtmlExporter {
     for (MChapter mchapter: book.chapters()) {
       builder.append(export(mchapter));
     }
-    builder.append("  </div>\n\n");
+
+    builder
+      .append("    <div class=\"rTableRow\">\n")
+      .append("      <div class=\"rTableHead\"><strong>Total</strong></div>\n")
+      .append("      <div class=\"rTableHead\"><strong>" + book.pages() + "</strong></div>\n")
+      .append("      <div class=\"rTableHead\"><strong>" + book.channels() + "</strong></div>\n")
+      .append("      <div class=\"rTableHead\"><strong>" + book.videos() + "</strong></div>\n")
+      .append("      <div class=\"rTableHead\"><strong>" + book.presentations() + "</strong></div>\n")
+      .append("  </div>");
+
+      builder
+      .append("  </div>")
+      .append("  </div>");
     
     return builder.toString();
     
@@ -151,7 +194,8 @@ public class HtmlExporter {
 
     builder
       .append("    <div class=\"rTableRow\">\n")
-      .append("      <div class=\"rTableHead\">" + chapter.name() + " [<a href=\"" + WIKI_URL+"/" + chapter.name() + "\">current</a> | <a href=\"" + WIKI_URL+"?title=" + chapter.name() + "&action=history\">history</a>]</div>\n");
+      .append("      <div class=\"rTableHead\">" + chapter.name() + " [<a href=\"" + WIKI_URL+"/" + chapter.name() + "\">current</a> | <a href=\"" + WIKI_URL+"?title=" + chapter.name() + "&action=history\">history</a>]</div>\n")
+      .append("      <div class=\"rTableHead\">" + statPerDay(chapter.pages()) + "</div>\n");
 
     
     builder.append("      <div class=\"rTableHead\">" 

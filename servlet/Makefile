@@ -14,20 +14,35 @@ JDS_JAR_FILE=jds-stat.jar
 JDS_JAR=$(SERVLET_LIB_DIR)/$(JDS_JAR_FILE)
 
 
+WINSTONE_JAR=winstone.jar
+
 DEPS=$(JSON_JAR) $(JAVA_CLASSES) $(WINSTONE_JAR) $(JDS_JAR)
 
 
-WINSTONE_JAR=winstone.jar
-
 CLASSPATH=.:$(JSON_JAR):$(WINSTONE_JAR):$(JDS_JAR)
+
+all: $(DEPS) $(SERVLET_LIB_DIR) $(LIB_DIR)
+
+$(WINSTONE_JAR): 
+	wget 'https://sourceforge.net/projects/winstone/files/latest/download?source=typ_redirect' -O $(WINSTONE_JAR)
+
+$(LIB_DIR):
+	mkdir $(LIB_DIR)
+
+$(SERVLET_LIB_DIR):
+	mkdir $(SERVLET_LIB_DIR)
+
+
+$(JSON_JAR):
+	curl -o $(JSON_JAR) $(JSON_URL)
+
 
 %.class:%.java
 	javac -cp $(CLASSPATH) $<
 
-all: $(DEPS) $(SERVLET_CLASSES) $(JDS_JAR)
-
-../$(JDS_JAR_FILE):
-	cd .. && make clean && make && make jar
+../$(JDS_JAR_FILE): $(LIB_DIR) $(SERVLET_LIB_DIR)
+	-cd .. && rm -f $(JDS_JAR_FILE)
+	cd .. && make && make jar
 
 jds:
 	-rm ../$(JDS_JAR_FILE) 
@@ -37,17 +52,5 @@ $(JDS_JAR): ../$(JDS_JAR_FILE)
 	cp ../$(JDS_JAR_FILE) $(JDS_JAR)
 
 
-$(WINSTONE_JAR):
-	wget 'https://sourceforge.net/projects/winstone/files/latest/download?source=typ_redirect' -O $(WINSTONE_JAR)
-
-
-lib:
-	mkdir $(LIB_DIR)
-
-
-$(JSON_JAR): $(LIB_DIR)
-	curl -o $(JSON_JAR) $(JSON_URL)
-
-
-run:
-	java -jar winstone.jar --webroot=webroot
+run: $(SERVLET_CLASSES) $(DEPS)
+	java -jar $(WINSTONE_JAR) --webroot=webroot

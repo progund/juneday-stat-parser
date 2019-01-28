@@ -34,6 +34,7 @@ public class HtmlExporter {
   private long days;
 
   private static final String ratioFormat = "%d (%.2f)";
+  private static final String smallRatioFormat = " (%.2f)";
   
   
   public HtmlExporter(Measurement measurement) {
@@ -86,15 +87,19 @@ public class HtmlExporter {
     builder
       .append("Books [")
       .append(intToColorString(pageSum))
+      .append(smallStatPerDay(pageSum))
       .append(" pages ")
       .append(" | ")
       .append(intToColorString(channelSum))
+      .append(smallStatPerDay(channelSum))
       .append(" channels ")
       .append(" | ")
       .append(intToColorString(videoSum))
+      .append(smallStatPerDay(videoSum))
       .append(" videos ")
       .append(" | ")
       .append(intToColorString(presSum))
+      .append(smallStatPerDay(presSum))
       .append(" presentations] ");
     
     for (MBook book : stat.books()) {
@@ -147,9 +152,7 @@ public class HtmlExporter {
   public String export(MBook book)  {
     StringBuilder builder = new StringBuilder();
     builder
-      .append("  <span style=\"color:black; float:none;\">")
       .append("    <button class=\"collapsible\">Show more</button>")
-      .append("  </span>")
       .append("  <div class=\"content\">")
       .append("  <div class=\"rTable\">\n\n")
       .append("    <div class=\"rTableRow\">\n")
@@ -184,6 +187,11 @@ public class HtmlExporter {
   private String statPerDay(int value) {
     double ratio = value/((double) days);
     return String.format(ratioFormat, value, ratio);
+  }
+
+  private String smallStatPerDay(int value) {
+    double ratio = value/((double) days);
+    return String.format(smallRatioFormat, ratio);
   }
 
   public String export(MCode code)  {

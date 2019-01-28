@@ -53,6 +53,8 @@ public class Measurement {
     return mstat;
   }
 
+  
+  
   private Map<CodeSummary.ProgLang, CodeSummary.Stat> diffCode() {
     CodeSummary startCode = start.codeSummary();
     CodeSummary stopCode = stop.codeSummary();
@@ -62,8 +64,22 @@ public class Measurement {
     for (CodeSummary.ProgLang lang : CodeSummary.ProgLang.values()) {
       CodeSummary.Stat startStat = startCode.stat(lang.toString());
       CodeSummary.Stat stopStat = stopCode.stat(lang.toString());
-      int loc = stopStat.loc() - startStat.loc();
-      int files = stopStat.files() - startStat.files();
+      int startLoc = 0;
+      int startFiles = 0;
+      if (startStat != null ) {
+         startLoc = startStat.loc();
+         startFiles = startStat.files();
+      }
+
+      int stopLoc = 0;
+      int stopFiles = 0;
+      if (stopStat != null ) {
+         stopLoc = stopStat.loc();
+         stopFiles = stopStat.files();
+      }
+
+      int loc = stopLoc - startLoc ;
+      int files = stopFiles - startFiles; 
       diffedCode.put(lang, new CodeSummary.Stat(lang, loc, files));
     }
     return diffedCode;
@@ -228,16 +244,16 @@ public class Measurement {
               || mchapter.pages != 0) {
            mchapter.name = chapterTitle;
            mbook.chapters.add(mchapter);
-           System.err.println(" add chapter: " + chapterTitle);
+           //           System.err.println(" add chapter: " + chapterTitle);
          } else {
-           System.err.println(" NOT add chapter: " + chapterTitle
-                              + " " + mchapter.diffVideosStart.size()
-                              + " " + mchapter.diffVideosStop.size()
-                              + " " + mchapter.diffChannelsStart.size()
-                              + " " + mchapter.diffChannelsStop.size()
-                              + " " + mchapter.diffPresentationsStart.size()
-                              + " " + mchapter.diffPresentationsStop.size()
-                              );
+           // System.err.println(" NOT add chapter: " + chapterTitle
+           //                    + " " + mchapter.diffVideosStart.size()
+           //                    + " " + mchapter.diffVideosStop.size()
+           //                    + " " + mchapter.diffChannelsStart.size()
+           //                    + " " + mchapter.diffChannelsStop.size()
+           //                    + " " + mchapter.diffPresentationsStart.size()
+           //                    + " " + mchapter.diffPresentationsStop.size()
+           //                    );
          }
          
          

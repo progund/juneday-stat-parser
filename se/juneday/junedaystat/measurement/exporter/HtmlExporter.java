@@ -1,7 +1,8 @@
 package se.juneday.junedaystat.measurement.exporter;
 
-import se.juneday.junedaystat.measurement.Measurement;
+import se.juneday.junedaystat.domain.Presentation;
 
+import se.juneday.junedaystat.measurement.Measurement;
 import se.juneday.junedaystat.measurement.Measurement.MStat;
 import se.juneday.junedaystat.measurement.Measurement.MPod;
 import se.juneday.junedaystat.measurement.Measurement.MVideo;
@@ -20,7 +21,11 @@ import static java.time.temporal.ChronoUnit.YEARS;
 
 public class HtmlExporter {
 
-  String CSS_STYLE="  <style type=\"text/css\">       .rTable {      display: table;      width: 100%;      }      .rTableRow {      display: table-row;      }      .rTableHeading {      display: table-header-group;      background-color: #ddd;      }      .rTableCell, .rTableHead {      display: table-cell;      padding: 3px 10px;      border: 1px solid #999999;      }      .rTableHeading {      display: table-header-group;      background-color: #ddd;      font-weight: bold;      }      .rTableFoot {      display: table-footer-group;      font-weight: bold;      background-color: #ddd;      }      .rTableBody {      display: table-row-group;      }</style>";
+  private static final String WIKI_URL = "http://wiki.juneday.se/mediawiki/index.php";
+  private static final String JSON_URL = "http://rameau.sandklef.com/junedaywiki-stats/";
+    
+  private final static String CSS_STYLE="  <style type=\"text/css\">       .rTable {      display: table;      width: 100%;      }      .rTableRow {      display: table-row;      }      .rTableHeading {      display: table-header-group;      background-color: #ddd;      }      .rTableCell, .rTableHead {      display: table-cell;      padding: 3px 10px;      border: 1px solid #999999;      }      .rTableHeading {      display: table-header-group;      background-color: #ddd;      font-weight: bold;      }      .rTableFoot {      display: table-footer-group;      font-weight: bold;      background-color: #ddd;      }      .rTableBody {      display: table-row-group;      }</style>";
+  //<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js\"></script>   <script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js\"></script>";
 
   private Measurement measurement;
   private long days;
@@ -60,7 +65,7 @@ public class HtmlExporter {
 
     builder.append("Books<br>");
     for (MBook book : stat.books()) {
-      builder.append("Book " + book.name() + "<br>");
+      builder.append("Book: <a href=\"" + WIKI_URL+"/"+book.name() + "\"> " + book.name() + "</a> (<a href=\"" + WIKI_URL+"?title=" + book.name() + "&action=history\">history</a>)<br>");
       builder.append(export(book));
     }
     
@@ -141,19 +146,60 @@ public class HtmlExporter {
 
   public String export(MChapter chapter)  {
     StringBuilder builder = new StringBuilder();
-    
+
+          //      .append("      <div class=\"rTableHead\"><a href=\"#collapse-" + chapter.name() + "\" data-toggle=\"collapse\"> " + chapter.name() + "</a><div id=\"collapse-" + chapter.name() + "\" class=\"collapse\"> Lorem ipsum dolor text.... </div></div> \n")
+
     builder
       .append("    <div class=\"rTableRow\">\n")
-      .append("      <div class=\"rTableHead\">" + chapter.name() + "</div>\n")
+      .append("      <div class=\"rTableHead\">" + chapter.name() + " [<a href=\"" + WIKI_URL+"/" + chapter.name() + "\">current</a> | <a href=\"" + WIKI_URL+"?title=" + chapter.name() + "&action=history\">history</a>]</div>\n");
+
+    
+    builder.append("      <div class=\"rTableHead\">" 
+                   + statPerDay(( chapter.diffChannelsStop().size() - chapter.diffChannelsStart().size() )));;
+    if ( (chapter.diffChannelsStop().size() > 0)
+         ||
+         (chapter.diffChannelsStart().size() > 0) )  {
+      builder.append("<br>");
+    }
+    for (String url : chapter.diffChannelsStop()) {
+      builder.append(" + <a href=\"" + url + "\">" + url + "</a><br>");
+    }
+    for (String url : chapter.diffChannelsStart()) {
+      builder.append(" - <a href=\"" + url + "\">" + url + "</a><br>");
+    }
+    builder.append("</div>\n");
+    
+    builder
       .append("      <div class=\"rTableHead\">" 
-              + statPerDay(( chapter.diffChannelsStop().size() - chapter.diffChannelsStart().size() ))
-              + "</div>\n")
-      .append("      <div class=\"rTableHead\">" 
-              + statPerDay(( chapter.diffVideosStop().size() - chapter.diffVideosStart().size() ))
-              + "</div>\n")
-      .append("      <div class=\"rTableHead\">" 
-              + statPerDay(( chapter.diffPresentationsStop().size() - chapter.diffPresentationsStart().size() ))
-              + "</div>\n")
+              + statPerDay(( chapter.diffVideosStop().size() - chapter.diffVideosStart().size() )));
+    if ( (chapter.diffVideosStop().size() > 0)
+         ||
+         (chapter.diffVideosStart().size() > 0) )  {
+      builder.append("<br>");
+    }
+    for (String url : chapter.diffVideosStop()) {
+      builder.append(" + <a href=\"" + url + "\">" + url + "</a><br>");
+    }
+    for (String url : chapter.diffVideosStart()) {
+      builder.append(" - <a href=\"" + url + "\">" + url + "</a><br>");
+    }
+    builder.append("</div>\n");
+
+    builder.append("      <div class=\"rTableHead\">" 
+                   + statPerDay(( chapter.diffPresentationsStop().size() - chapter.diffPresentationsStart().size() )));
+    if ( (chapter.diffPresentationsStop().size() > 0)
+         ||
+         (chapter.diffPresentationsStart().size() > 0) )  {
+      builder.append("<br>");
+    }
+    for (Presentation p : chapter.diffPresentationsStop()) {
+      builder.append(" + " + p.name() + "  (" + p.pages()+ " pages)<br>");
+    }
+    for (Presentation p : chapter.diffPresentationsStart()) {
+      builder.append(" - " + p.name() + "  (" + p.pages()+ " pages)<br>");
+    }
+    
+    builder.append("</div>\n")
       .append("    </div>\n\n");
     
     return builder.toString();

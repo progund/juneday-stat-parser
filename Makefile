@@ -87,7 +87,8 @@ JSON_FILES=$(DATA_DIR)/20190127/jd-stats.json $(DATA_DIR)/20181107/jd-stats.json
 json: $(JSON_FILES)
 
 html: $(JSON_FILES) $(JAVA_CLASSES)
-	@java $(DATA_DIR_ARG) -cp $(CLASSPATH) $(CLI) 20181107  20181231 --html
+	@java $(DATA_DIR_ARG) -cp $(CLASSPATH) $(CLI) 20181107  20181231 --html > /tmp/jd.html
+	@cat /tmp/jd.html
 
 run: $(JSON_FILES) $(JAVA_CLASSES)
 	java $(DATA_DIR_ARG) -cp $(CLASSPATH) $(CLI)

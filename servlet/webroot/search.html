@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Juneday Statistics - search</title>
+  </head>
+  <body>
+    <a href="/search?start=daily&stop=today">daily</a>
+    <a href="/search?start=week&stop=today">weekly</a>
+    <a href="/search?start=month&stop=today">monthly</a>
+    <a href="/search?start=year&stop=today">yearly</a>
+    <a href="/search?start=2017">2017</a>
+    <a href="/search?start=2018">2018</a>
+    <a href="/search?start=2019">2019</a>
+    <form method="GET" action="search">
+      <label for="start">start date</label><input type="text" name="start" id="start"><br/>
+      <label for="stop">stop date</label><input type="text" name="stop" id="stop"><br/>
+      <input type="submit" value="Search"/>
+    </form>
+  </body>
+</html>

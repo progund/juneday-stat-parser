@@ -16,6 +16,7 @@ import se.juneday.junedaystat.domain.JunedayStat;
 import se.juneday.junedaystat.utils.Utils;
 
 import java.util.Map;
+import java.util.Collections;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.time.temporal.ChronoUnit.WEEKS;
 import static java.time.temporal.ChronoUnit.MONTHS;
@@ -77,6 +78,7 @@ public class HtmlExporter {
     int channelSum=0;
     int videoSum=0;
     int presSum=0;
+    Collections.sort(stat.books(), (b1, b2) -> (b2.pages() - b1.pages()));
     for (MBook book : stat.books()) {
       pageSum += book.pages();
       channelSum += book.channels();

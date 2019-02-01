@@ -3,7 +3,9 @@ SERVLET_DIR=webroot/WEB-INF/
 SERVLET_LIB_DIR=$(SERVLET_DIR)/lib
 
 SERVLET_JAVA=\
-   ./webroot/WEB-INF/classes/se/juneday/junedaystat/JunedayStatAPI.java
+   ./webroot/WEB-INF/classes/se/juneday/junedaystat/JunedayStatAPI.java \
+   ./webroot/WEB-INF/classes/se/juneday/junedaystat/DiffAPI.java
+
 SERVLET_CLASSES=$(SERVLET_JAVA:.java=.class)
 
 JSON_FILE=org.json.jar
@@ -15,6 +17,7 @@ JDS_JAR=$(SERVLET_LIB_DIR)/$(JDS_JAR_FILE)
 
 
 WINSTONE_JAR=winstone.jar
+WINSTONE_ARGS=--httpPort=9997  --ajp13Port=8998
 
 DEPS=$(JSON_JAR) $(JAVA_CLASSES) $(WINSTONE_JAR) $(JDS_JAR)
 
@@ -53,4 +56,12 @@ $(JDS_JAR): ../$(JDS_JAR_FILE)
 
 
 run: $(SERVLET_CLASSES) $(DEPS)
-	java -jar $(WINSTONE_JAR) --webroot=webroot
+	java -jar $(WINSTONE_JAR) --webroot=webroot $(WINSTONE_ARGS)
+
+deploy: $(SERVLET_CLASSES) $(DEPS)
+	make jds && make
+restart: 
+	-ps auxww| grep 9997 | grep -v grep
+	-ps auxww| grep 9997 | grep -v grep | awk '{ print $$2}' | xargs kill
+	sleep 0
+	-ps auxww| grep 9997 | grep -v grep

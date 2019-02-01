@@ -7,8 +7,16 @@ xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns
     <servlet-name>jdsapi</servlet-name>
     <servlet-class>se.juneday.junedaystat.JunedayStatAPI</servlet-class>
   </servlet>
+  <servlet>
+    <servlet-name>diffapi</servlet-name>
+    <servlet-class>se.juneday.junedaystat.DiffAPI</servlet-class>
+  </servlet>
   <servlet-mapping>
     <servlet-name>jdsapi</servlet-name>
     <url-pattern>/search</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>diffapi</servlet-name>
+    <url-pattern>/diff</url-pattern>
   </servlet-mapping>
 </web-app>

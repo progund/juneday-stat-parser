@@ -40,7 +40,8 @@ public class JDCli {
     SUM,
     BOOK,
     DIFF_HTML,
-    BOOK_VIDEO
+    BOOK_VIDEO,
+    SINGLE_BOOK
   };
 
   private class JDSSession {
@@ -58,6 +59,19 @@ public class JDCli {
     }
   }
 
+    public void printSingleBook(String date) {
+	JunedayStat start = StatisticsParser.readFile(date);
+
+	for (Book b : start.books()) {
+	    System.out.println("- " + b.name());
+	    if (b.name().equals("Java Web programming")) {
+		for (Chapter c : b.chapters()) {
+		    System.out.println("   |- " + c.name());
+		}
+	    }
+	}
+    }
+    
   public void parseArguments(String[] args) {
     String startString = null;
     String stopString = null;
@@ -67,6 +81,10 @@ public class JDCli {
         mode = JDSMode.BOOK;
       } else if (args[i].equals("--html")) {
         mode = JDSMode.DIFF_HTML;
+      } else if (args[i].equals("--single-book")) {
+        mode = JDSMode.SINGLE_BOOK;
+	printSingleBook(startString);
+	System.exit(0);
       } else if (startString == null) {
         startString = args[i];
       } else if (stopString == null){

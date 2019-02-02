@@ -93,7 +93,8 @@ public class StatisticsParser {
     int channelCount = getIntValue(jsonChapter, JunedayStat.JDSTAT_CHANNEL_COUNT, 0);
     int videoCount = getIntValue(jsonChapter, JunedayStat.JDSTAT_VIDEO_COUNT, 0);
 
-
+    System.out.println("Adding chapter: " +  name + " <----- " + jsonChapter);
+    
     // Get video list
     List<String> videos = new ArrayList<>();
     try {
@@ -153,6 +154,7 @@ public class StatisticsParser {
     List<Chapter> chapters = new ArrayList<>();
     for (int i = 0; i < jsonChapters.length(); i++) {
       try {
+	  System.out.println("JSON chapter: " +  	  	  jsonChapters.getJSONObject(i));
         chapters.add(extractChapter(jsonChapters.getJSONObject(i)));
       } catch (JSONException e) {
         e.printStackTrace();
@@ -166,6 +168,9 @@ public class StatisticsParser {
     String name = getStringValue(jsonObject, JunedayStat.JDSTAT_BOOK_NAME, "");
     List<Chapter> chapters;
     try {
+	if (name.equals("Java Web programming")) {
+	    System.out.println("Will add chapter to book: " + name + " " + jsonObject.getJSONArray(JunedayStat.JDSTAT_CHAPTERS));
+	}
       JSONArray jsonChapters = jsonObject.getJSONArray(JunedayStat.JDSTAT_CHAPTERS);
       chapters = extractChapters(jsonChapters);
     } catch (JSONException e) {

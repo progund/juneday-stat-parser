@@ -17,6 +17,9 @@ import se.juneday.junedaystat.utils.Utils;
 
 import java.util.Map;
 import java.util.Collections;
+import java.time.LocalDate;
+import java.io.File;
+
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.time.temporal.ChronoUnit.WEEKS;
 import static java.time.temporal.ChronoUnit.MONTHS;
@@ -26,8 +29,13 @@ public class HtmlExporter {
 
   private static final String WIKI_URL = "http://wiki.juneday.se/mediawiki/index.php";
   private static final String JSON_URL = "http://rameau.sandklef.com/junedaywiki-stats/";
+  private static final String PDF_URL = "http://rameau.sandklef.com/juneday-pdf/";
+    public static final String JDS_LINKS =     "[ <a href=\"https://programmingpedagogy.wordpress.com/\">English blog</a> | <a href=\"https://programmeringspedagogik.wordpress.com\">Swedish blog</a> | <a href=\"https://www.juneday.se\"> Juneday</a> | <a href=\"https://juneday.podbean.com\"> Swedish podcast</a> | <a href=\"https://github.com/progund\"> git repositories (github.com/progund)</a> | <a href=\"https://twitter.com/prog_edu\"> Twitter </a> | <a href=\"https://vimeo.com/user52531669\">Vimeo</a> | <a href=\"http://stat.juneday.se\">Juneday stats</a> ] <br>";
+
+
+
     
-  private final static String CSS_STYLE="  <style type=\"text/css\">       .rTable {      display: table;      }      .rTableRow { display: table-row;      }      .rTableHeading {      display: table-header-group;      background-color: #988;      }      .rTableCell, .rTableHead {   display: table-cell;      padding: 3px 10px;      border: 1px solid #999999;      }      .rTableHeading {      display: table-header-group;      background-color: #ddd;      font-weight: bold; }      .rTableFoot {      display: table-footer-group;      font-weight: bold;      background-color: #ddd;      }      .rTableBody {      display: table-row-group;} .collapsible {  background-color: #eee;  color: black;  cursor: pointer;  padding: 0px;  width: 100%;  border: none;  text-align: left;  outline: none;  font-size: 15px; }.active, .collapsible:hover {  background-color: #555;}.content {  padding: 0 18px;  display: none;  overflow: hidden;  background-color: #f1f1f1;}  </style>";
+  private final static String CSS_STYLE="  <style type=\"text/css\">       .rTable {      display: table;      }      .rTableRow { display: table-row;      }      .rTableHeading {      display: table-header-group;      background-color: #988;      }      .rTableCell, .rTableHead {   display: table-cell;      padding: 3px 10px;      border: 1px solid #999999;      }      .rTableHeading {      display: table-header-group;      background-color: #ddd;      font-weight: bold; }      .rTableFoot {      display: table-footer-group;      font-weight: bold;      background-color: #ddd;      }      .rTableBody {      display: table-row-group;} .collapsible {  background-color: #eee;  color: black;  cursor: pointer;  padding: 0px;  width: 100%;  border: none;  text-align: left;  outline: none;  font-size: 15px; }.active, .collapsible:hover {  background-color: #ddd;}.content {  padding: 0 18px;  display: none;  overflow: hidden;  background-color: #eee;}  </style>";
 
   private final static String SCRIPT = "<script>var coll = document.getElementsByClassName(\"collapsible\");var i;for (i = 0; i < coll.length; i++) {  coll[i].addEventListener(\"click\", function() {    this.classList.toggle(\"active\");    var content = this.nextElementSibling;    if (content.style.display === \"block\") {      content.style.display = \"none\";    } else {      content.style.display = \"block\";    }  });}</script>";
 
@@ -43,7 +51,15 @@ public class HtmlExporter {
     days = DAYS.between(measurement.startJunedayStat().date(),
                         measurement.stopJunedayStat().date());
   }
-  
+
+    public String compareLink(String date) {
+	return " - compare this version to: [ "
+	    + "<a href=\"/search?start=daily&stop=" + date + "\">yesterday</a> | "
+	    + "<a href=\"/search?start=week&stop=" + date + "\">a week ago</a> | "
+	    + "<a href=\"/search?start=month&stop=" + date + "\">a month ago</a> | "
+	    + "<a href=\"/search?start=year&stop=" + date + "\">a year ago</a> ]";
+    }
+    
   public String export()  {
     StringBuilder builder = new StringBuilder();
     builder
@@ -52,9 +68,14 @@ public class HtmlExporter {
       .append(CSS_STYLE)
       .append("</head>")
       .append("  <body>")
-      .append(" start: " + measurement.startJunedayStat().date() + "<br>")
-      .append(" stop: " + measurement.stopJunedayStat().date() + "<br>")
-      .append(" days: " + days + "<br>");
+      .append(JDS_LINKS)
+      .append("<br>")
+      .append("<h1>Information about the search</h1>")
+      .append("<ul>")
+	.append("  <li>start: " + measurement.startJunedayStat().date() + compareLink(Utils.dateToString(measurement.startJunedayStat().date()))+ "</li>")
+	.append("  <li>stop: " + measurement.stopJunedayStat().date() + compareLink(Utils.dateToString(measurement.stopJunedayStat().date()))+ "</li>")
+	.append("  <li> days: " + days + "</li>")
+	.append("</ul>");
     
     builder
       .append(export(measurement.stat()))
@@ -87,6 +108,7 @@ public class HtmlExporter {
     }
     
     builder
+      .append("<h1>Books</h1>")
       .append("Books [")
       .append(intToColorString(pageSum))
       .append(smallStatPerDay(pageSum))
@@ -154,7 +176,7 @@ public class HtmlExporter {
   public String export(MBook book)  {
     StringBuilder builder = new StringBuilder();
     builder
-      .append("    <button class=\"collapsible\">Show more</button>")
+      .append("  <button class=\"collapsible\">Show details</button>")
       .append("  <div class=\"content\">")
       .append("  <div class=\"rTable\">\n\n")
       .append("    <div class=\"rTableRow\">\n")
@@ -204,6 +226,7 @@ public class HtmlExporter {
     int locSum = 0;
     
     builder
+      .append("<h1>Soure code</h1>")
       .append("  <div class=\"rTable\">\n\n")
       .append("    <div class=\"rTableRow\">\n")
       .append("      <div class=\"rTableHead\"><strong>Language</strong></div>\n")
@@ -233,6 +256,45 @@ public class HtmlExporter {
     return builder.toString();
   }
 
+    private String pdfLink(LocalDate date, String fileName) {
+
+	String dateStr = Utils.dateToString(date);
+	File f = new File("/var/www/html/juneday-pdf/" + dateStr + "/junedaywiki/" + fileName + ".pdf");
+	//	System.out.println("Checking file: " + f);
+	if (f.exists()) {
+	    //	    System.err.println(" - Exist existing: " +f );
+	    return " <a href=\""
+		+ PDF_URL
+		+ "/"
+		+ dateStr
+		+ "/junedaywiki/"
+		+ fileName
+		+ ".pdf\">"
+		+ date
+		+ "</a> ";
+	} /*else {
+	    System.err.print(", " +f );
+	    }*/
+	return " NA ";
+    }
+
+    private String pdfLink(LocalDate start, LocalDate stop, String chapter) {
+	
+	String fileName = chapter.replace(" ","_") ;
+	String startRef = pdfLink(start, fileName);
+	String stopRef = pdfLink(stop, fileName);
+	String diffLink = "";
+	String startDateStr = Utils.dateToString(start);
+	String stopDateStr = Utils.dateToString(stop);
+	
+	if (!startRef.equals(" NA ") && !stopRef.equals(" NA ") ) {
+	    diffLink = " | <a href=\"/diff?start=" + startDateStr + "&stop=" + stopDateStr + "&file=" + fileName + "\">diff</a>" ;
+	}
+	
+	return startRef + " | " + stopRef + diffLink;
+    } 
+    
+    
   public String export(MChapter chapter)  {
     StringBuilder builder = new StringBuilder();
 
@@ -240,9 +302,13 @@ public class HtmlExporter {
 
     builder
       .append("    <div class=\"rTableRow\">\n")
-      .append("      <div class=\"rTableHead\">" + chapter.name() + " [<a href=\"" + WIKI_URL+"/" + chapter.name() + "\">current</a> | <a href=\"" + WIKI_URL+"?title=" + chapter.name() + "&action=history\">history</a>]</div>\n")
+	.append("      <div class=\"rTableHead\">" + chapter.name() + "<br> [Wiki: <a href=\"" + WIKI_URL+"/" + chapter.name() + "\">current</a> | <a href=\"" + WIKI_URL+"?title=" + chapter.name() + "&action=history\">history</a>]")
+        .append("<br>[PDF: " + pdfLink(measurement.startJunedayStat().date(),measurement.stopJunedayStat().date(),chapter.name())+ "]")
+	.append("</div>\n")
       .append("      <div class=\"rTableHead\">" + statPerDay(chapter.pages()) + "</div>\n");
 
+    // gen:  http://rameau.sandklef.com/juneday-pdf//20181229/junedaywiki/Assignment:Exposing_data_over_http_lab2_Android_Client.pdf
+    // real: http://rameau.sandklef.com/juneday-pdf//20190128/junedaywiki/Assignment:Exposing_data_over_http_lab2_Android_Client.pdf
     
     builder.append("      <div class=\"rTableHead\">" 
                    + statPerDay(( chapter.diffChannelsStop().size() - chapter.diffChannelsStart().size() )));;

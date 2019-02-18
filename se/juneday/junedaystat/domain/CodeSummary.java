@@ -11,6 +11,7 @@ public class CodeSummary {
     Bash,
     C,
     Doc,
+    Database,
     Build
   };
 

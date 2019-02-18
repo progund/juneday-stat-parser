@@ -47,17 +47,17 @@ public class HtmlExporter {
   
   
   public HtmlExporter(Measurement measurement) {
-    this.measurement = measurement;
-    days = DAYS.between(measurement.startJunedayStat().date(),
-                        measurement.stopJunedayStat().date());
+      this.measurement = measurement;
+      days = DAYS.between(measurement.startJunedayStat().date(),
+			  measurement.stopJunedayStat().date());
   }
 
     public String compareLink(String date) {
 	return " - compare this version to: [ "
-	    + "<a href=\"/search?start=daily&stop=" + date + "\">yesterday</a> | "
-	    + "<a href=\"/search?start=week&stop=" + date + "\">a week ago</a> | "
-	    + "<a href=\"/search?start=month&stop=" + date + "\">a month ago</a> | "
-	    + "<a href=\"/search?start=year&stop=" + date + "\">a year ago</a> ]";
+	    + "<a href=\"/search?start=daily&stop=" + date + "\">the day before</a> | "
+	    + "<a href=\"/search?start=week&stop=" + date + "\">a week before</a> | "
+	    + "<a href=\"/search?start=month&stop=" + date + "\">a month before</a> | "
+	    + "<a href=\"/search?start=year&stop=" + date + "\">a year before</a> ]";
     }
     
   public String export()  {

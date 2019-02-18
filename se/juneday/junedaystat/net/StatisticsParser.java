@@ -34,6 +34,7 @@ public class StatisticsParser {
     // System.out.println(fileName);
     LocalDate date = Utils.stringToLocalDate(dateStr);
     try {
+	System.out.println("Opening: " + fileName);	
       return jsonToJunedayStat(date,
                                new String(Files.readAllBytes(Paths.get(fileName))));
     } catch (Exception e) {

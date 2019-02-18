@@ -1,3 +1,4 @@
+VERSION=0.12
 INSTALL_BIN_DIR=$(HOME)/bin
 INSTALL_LIB_DIR=$(HOME)/.juneday/lib
 INSTALL_CACHE_DIR=$(HOME)/.juneday/stat/cache
@@ -80,7 +81,7 @@ DATA_DIR_ARG=-Djuneday_data_dir=$(DATA_DIR)
 
 
 jar: $(JAVA_CLASSES)
-	jar cvf jds-stat.jar se
+	jar cvf juneday-stat-$(VERSION).jar se
 
 JSON_FILES=$(DATA_DIR)/20190127/jd-stats.json $(DATA_DIR)/20181107/jd-stats.json $(DATA_DIR)/20181231/jd-stats.json $(DATA_DIR)/20190114/jd-stats.json $(DATA_DIR)/$(TODAY)/jd-stats.json $(DATA_DIR)/$(WEEKAGO)/jd-stats.json $(DATA_DIR)/20181107/jd-stats.json $(DATA_DIR)/20181231/jd-stats.json 
 

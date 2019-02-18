@@ -1,5 +1,7 @@
 package se.juneday.junedaystat.measurement;
 
+
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -100,7 +102,7 @@ public class Measurement {
   }
   */
   
-  private LocalDate now() {
+  public static LocalDate now() {
     return LocalDate.now();
   }
   /*

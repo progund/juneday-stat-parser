@@ -83,7 +83,7 @@ DATA_DIR_ARG=-Djuneday_data_dir=$(DATA_DIR)
 jar: $(JAVA_CLASSES)
 	jar cvf juneday-stat-$(VERSION).jar se
 
-JSON_FILES=$(DATA_DIR)/20190127/jd-stats.json $(DATA_DIR)/20181107/jd-stats.json $(DATA_DIR)/20181231/jd-stats.json $(DATA_DIR)/20190114/jd-stats.json $(DATA_DIR)/$(TODAY)/jd-stats.json $(DATA_DIR)/$(WEEKAGO)/jd-stats.json $(DATA_DIR)/20181107/jd-stats.json $(DATA_DIR)/20181231/jd-stats.json 
+JSON_FILES=$(DATA_DIR)/20190127/jd-stats.json $(DATA_DIR)/20181107/jd-stats.json $(DATA_DIR)/20181231/jd-stats.json $(DATA_DIR)/20190114/jd-stats.json $(DATA_DIR)/$(TODAY)/jd-stats.json $(DATA_DIR)/$(WEEKAGO)/jd-stats.json $(DATA_DIR)/20181107/jd-stats.json $(DATA_DIR)/20181231/jd-stats.json  $(DATA_DIR)/20190131/jd-stats.json   $(DATA_DIR)/20190130/jd-stats.json 
 
 json: $(JSON_FILES)
 
@@ -108,3 +108,10 @@ book: $(JSON_FILES)  $(JAVA_CLASSES)
 
 book2: $(JSON_FILES)  $(JAVA_CLASSES)
 	java $(DATA_DIR_ARG) -cp $(CLASSPATH) $(CLI) 20181107  20181231 --books
+
+single31: $(JSON_FILES)   $(JAVA_CLASSES)
+	java $(DATA_DIR_ARG) -cp $(CLASSPATH) $(CLI) 20190131 --single-book
+
+single30: $(JSON_FILES)   $(JAVA_CLASSES)
+	java $(DATA_DIR_ARG) -cp $(CLASSPATH) $(CLI) 20190130 --single-book
+

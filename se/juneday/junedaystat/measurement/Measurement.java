@@ -151,9 +151,11 @@ public class Measurement {
     Set<String> chapterSet = new HashSet<>();
 
     for (Chapter c : c1) {
+	System.out.println("chapter: " + c.name() + " c1");
       chapterSet.add(c.name());
     }
     for (Chapter c : c2) {
+	System.out.println("chapter: " + c.name() + " c2");
       chapterSet.add(c.name());
     }
     return chapterSet;
@@ -192,6 +194,8 @@ public class Measurement {
        mbook.chapters = new ArrayList<MChapter>();
 
        List<Chapter> startChapters = startBook.chapters();
+       for (Chapter c : startChapters) { 	System.out.println("LIST: " + c.name()); }
+
        List<Chapter> stopChapters = stopBook.chapters();
        
        Set<String> chapterTitles = chapterTitlesUnion(startChapters, stopChapters);
@@ -205,6 +209,7 @@ public class Measurement {
          Chapter startChapter = findChapter(startChapters, chapterTitle);
          Chapter stopChapter = findChapter(stopChapters, chapterTitle);
          MChapter mchapter = new MChapter();
+	System.out.println("chapter: \"" + chapterTitle + "\" book: \"" + title + "\"");
 
          mchapter.pages = stopChapter.pages() - startChapter.pages();
 

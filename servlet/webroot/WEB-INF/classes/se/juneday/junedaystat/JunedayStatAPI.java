@@ -35,17 +35,19 @@ public class JunedayStatAPI extends HttpServlet{
     String stopStr = request.getParameter("stop");
 
     if (stopStr ==null || stopStr.equals("") || stopStr.equals("today")) {
-      stopStr = Utils.dateToString(LocalDate.now().minus(1, DAYS)); // TODO: TODAY
+      stopStr = Utils.dateToString(LocalDate.now()); // TODO: TODAY
     }
+    LocalDate stopDate = Utils.stringToLocalDate(stopStr); 
+    System.out.println(" -stop set to: " + stopDate);
 
     if (startStr.equals("") || startStr.equals("daily")) {
-      startStr = Utils.dateToString(LocalDate.now().minus(2, DAYS)); // TODO: -1 .... not -2
+      startStr = Utils.dateToString(stopDate.minus(1, DAYS)); // TODO: -1 .... not -2
     } else if (startStr.equals("") || startStr.equals("week")) {
-      startStr = Utils.dateToString(LocalDate.now().minus(1, WEEKS));
+      startStr = Utils.dateToString(stopDate.minus(1, WEEKS));
     } else if (startStr.equals("month")) {
-      startStr = Utils.dateToString(LocalDate.now().minus(1, MONTHS));
+      startStr = Utils.dateToString(stopDate.minus(1, MONTHS));
     } else if (startStr.equals("year")) {
-      startStr = Utils.dateToString(LocalDate.now().minus(1, YEARS));
+      startStr = Utils.dateToString(stopDate.minus(1, YEARS));
     } else if (startStr.equals("2017")) {
       startStr = "20170313";
       stopStr = "20171231";
@@ -68,6 +70,11 @@ public class JunedayStatAPI extends HttpServlet{
       HtmlExporter he = new HtmlExporter(measurement);
       
       out.println(he.export());
+    } catch (NullPointerException e) {
+	String dataDir = System.getProperty("juneday_data_dir","data");
+	String startFileName = dataDir + "/" + startStr + "/jd-stats.json";
+	String stopFileName = dataDir + "/" + stopStr + "/jd-stats.json";
+	out.println("could not find files for: " + startFileName + " or " + stopFileName + ". <a href=\"/search.html\">search again</a> ..if you want");
     } catch (java.time.format.DateTimeParseException e) {
       out.println("Bad parameters.... <a href=\"/search.html\">search again</a>");
     }

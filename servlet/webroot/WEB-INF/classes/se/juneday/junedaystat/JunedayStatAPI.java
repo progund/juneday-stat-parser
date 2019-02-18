@@ -47,7 +47,7 @@ public class JunedayStatAPI extends HttpServlet{
     } else if (startStr.equals("month")) {
       startStr = Utils.dateToString(stopDate.minus(1, MONTHS));
     } else if (startStr.equals("year")) {
-      startStr = Utils.dateToString(stopDate.now().minus(1, YEARS));
+      startStr = Utils.dateToString(stopDate.minus(1, YEARS));
     } else if (startStr.equals("2017")) {
       startStr = "20170313";
       stopStr = "20171231";
@@ -70,6 +70,11 @@ public class JunedayStatAPI extends HttpServlet{
       HtmlExporter he = new HtmlExporter(measurement);
       
       out.println(he.export());
+    } catch (NullPointerException e) {
+	String dataDir = System.getProperty("juneday_data_dir","data");
+	String startFileName = dataDir + "/" + startStr + "/jd-stats.json";
+	String stopFileName = dataDir + "/" + stopStr + "/jd-stats.json";
+	out.println("could not find files for: " + startFileName + " or " + stopFileName + ". <a href=\"/search.html\">search again</a> ..if you want");
     } catch (java.time.format.DateTimeParseException e) {
       out.println("Bad parameters.... <a href=\"/search.html\">search again</a>");
     }

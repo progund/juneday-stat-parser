@@ -30,7 +30,7 @@ public class HtmlExporter {
   private static final String WIKI_URL = "http://wiki.juneday.se/mediawiki/index.php";
   private static final String JSON_URL = "http://rameau.sandklef.com/junedaywiki-stats/";
   private static final String PDF_URL = "http://rameau.sandklef.com/juneday-pdf/";
-    public static final String JDS_LINKS =     "[ <a href=\"https://programmingpedagogy.wordpress.com/\">English blog</a> | <a href=\"https://programmeringspedagogik.wordpress.com\">Swedish blog</a> | <a href=\"https://www.juneday.se\"> Juneday</a> | <a href=\"https://juneday.podbean.com\"> Swedish podcast</a> | <a href=\"https://github.com/progund\"> git repositories (github.com/progund)</a> | <a href=\"https://twitter.com/prog_edu\"> Twitter </a> | <a href=\"https://vimeo.com/user52531669\">Vimeo</a> | <a href=\"http://stat.juneday.se\">Juneday stats</a> ] <br>";
+    public static final String JDS_LINKS =     "[ <a href=\"https://programmingpedagogy.wordpress.com/\">English blog</a> | <a href=\"https://programmeringspedagogik.wordpress.com\">Swedish blog</a> | <a href=\"http://www.juneday.se\"> Juneday</a> | <a href=\"https://juneday.podbean.com\"> Swedish podcast</a> | <a href=\"https://github.com/progund\"> git repositories (github.com/progund)</a> | <a href=\"https://twitter.com/prog_edu\"> Twitter </a> | <a href=\"https://vimeo.com/user52531669\">Vimeo</a> | <a href=\"http://stat.juneday.se\">Juneday stats</a> ] <br>";
 
 
 

@@ -1,8 +1,15 @@
 #!/bin/bash
 
+#
+# Enable / disable actual creation of the diff file
+#
+exit 0
+
 log() {
     echo "[$(date)] $*" >> /tmp/pdf-diff.log
 }
+
+
 
 START="$1"
 STOP="$2"

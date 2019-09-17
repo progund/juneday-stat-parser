@@ -60,8 +60,8 @@ install:
 	sed -e 's,__INSTALL_BIN_DIR__,$(INSTALL_BIN_DIR),g' \
 	 -e 's,__INSTALL_LIB_DIR__,$(INSTALL_LIB_DIR),g' \
 	 -e 's,__INSTALL_CACHE_DIR__,$(INSTALL_CACHE_DIR),g' \
-	> $(INSTALL_BIN_DIR)/junday-stat.sh
-	chmod a+x $(INSTALL_BIN_DIR)/junday-stat.sh
+	> $(INSTALL_BIN_DIR)/juneday-stat.sh
+	chmod a+x $(INSTALL_BIN_DIR)/juneday-stat.sh
 
 info: 
 	@echo "Classes: $(JAVA_CLASSES)"
